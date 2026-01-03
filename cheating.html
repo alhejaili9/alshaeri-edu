@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <title>محضر إثبات حالة غش - مدارس العقيق</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&display=swap');
+
+        @page {
+            size: A4;
+            margin: 0;
+        }
+
+        body {
+            font-family: 'Amiri', serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f5f5f5;
+        }
+
+        .container {
+            width: 210mm;
+            height: 297mm;
+            padding: 10mm 15mm;
+            margin: 10mm auto;
+            background: white;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            box-sizing: border-box;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .header-table {
+            width: 100%;
+            border: none;
+            margin-bottom: 5px;
+        }
+
+        .header-table td {
+            vertical-align: middle;
+            text-align: center;
+            width: 33.33%;
+        }
+
+        .school-info {
+            text-align: right;
+            font-weight: bold;
+            font-size: 12pt;
+            line-height: 1.4;
+        }
+
+        .report-title {
+            text-align: center;
+            margin: 10px 0;
+        }
+
+        .report-title h2 {
+            display: inline-block;
+            border-bottom: 2px solid #000;
+            padding-bottom: 5px;
+            font-size: 18pt;
+            margin: 0;
+        }
+
+        .main-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 5px;
+        }
+
+        .main-table td {
+            padding: 6px 5px;
+            border: 1px solid #000;
+            font-size: 13pt;
+        }
+
+        .label {
+            font-weight: bold;
+            background-color: #f9f9f9;
+            width: 110px;
+        }
+
+        input[type="text"], select {
+            width: 95%;
+            border: none;
+            font-family: 'Amiri', serif;
+            font-size: 13pt;
+            outline: none;
+            background: transparent;
+        }
+
+        textarea {
+            width: 100%;
+            height: 90px;
+            border: none;
+            font-family: 'Amiri', serif;
+            font-size: 13pt;
+            resize: none;
+            line-height: 1.6;
+            outline: none;
+            padding: 5px;
+        }
+
+        .sig-table {
+            width: 100%;
+            margin-top: auto;
+            margin-bottom: 20px;
+            border-collapse: collapse;
+        }
+
+        .sig-table td {
+            border: 1px solid #000;
+            padding: 8px 5px;
+            text-align: center;
+            width: 33.33%;
+            vertical-align: top;
+        }
+
+        .sig-title {
+            font-weight: bold;
+            display: block;
+            margin-bottom: 8px;
+            text-decoration: underline;
+        }
+
+        .sig-name-input {
+            width: 90%;
+            text-align: center;
+            font-weight: bold;
+            border-bottom: 1px dashed #ccc !important;
+        }
+
+        .no-print {
+            position: fixed;
+            left: 20px;
+            bottom: 20px;
+            z-index: 100;
+        }
+
+        .btn-print {
+            padding: 10px 25px;
+            background: #2c3e50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: bold;
+        }
+
+        @media print {
+            .no-print { display: none; }
+            body { background: white; }
+            .container { margin: 0; box-shadow: none; width: 100%; height: 297mm; }
+            select { appearance: none; -webkit-appearance: none; border: none !important; }
+            input { border: none !important; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="no-print">
+    <button class="btn-print" onclick="window.print()">🖨️ طباعة المحضر</button>
+</div>
+
+<div class="container">
+    <table class="header-table">
+        <tr>
+            <td class="school-info">
+                المملكة العربية السعودية<br>
+                وزارة التعليم<br>
+                إدارة التعليم بالمدينة المنورة<br>
+                مدارس العقيق الأهلية
+            </td>
+            <td>
+                <img src="https://raw.githubusercontent.com/alhejaili/assets/main/moe_logo.png" width="١٠٠" alt="شعار الوزارة" onerror="this.src='https://upload.wikimedia.org/wikipedia/ar/archive/1/11/20211124115124%21Logo_of_Ministry_of_Education_%28Saudi_Arabia%29.png'">
+            </td>
+            <td>
+                <img src="https://raw.githubusercontent.com/alhejaili/assets/main/aqeeq_logo.png" width="١٠٠" alt="شعار مدارس العقيق" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+                <div style="display:none; border: ١px dashed #٩٩٩; padding: ٥px; font-size: ١٠pt;">شعار مدارس العقيق</div>
+            </td>
+        </tr>
+    </table>
+
+    <div class="report-title">
+        <h2>محضر إثبات حالة غش</h2>
+    </div>
+
+    <table class="main-table">
+        <tr>
+            <td class="label">إنه في يوم:</td>
+            <td>
+                <select>
+                    <option>الأحد</option><option>الاثنين</option><option>الثلاثاء</option>
+                    <option>الأربعاء</option><option>الخميس</option>
+                </select>
+            </td>
+            <td class="label">التاريخ الهجري:</td>
+            <td><input type="text" placeholder="  /  / ١٤٤٧ هـ" style="text-align: center;"></td>
+        </tr>
+        <tr>
+            <td class="label">اسم الطالب:</td>
+            <td colspan="٣"><input type="text" placeholder="اسم الطالب الرباعي"></td>
+        </tr>
+        <tr>
+            <td class="label">الصف:</td>
+            <td>
+                <select>
+                    <option>الأول متوسط</option><option selected>الثاني متوسط</option><option>الثالث متوسط</option>
+                </select>
+            </td>
+            <td class="label">الفصل:</td>
+            <td>
+                <select>
+                    <option>١</option><option>٢</option><option>٣</option><option>٤</option><option>٥</option>
+                </select>
+            </td>
+        </tr>
+        <tr>
+            <td class="label">المادة:</td>
+            <td>
+                <select>
+                    <option>الرياضيات</option><option>العلوم</option><option>لغتي الخالدة</option>
+                    <option>اللغة الإنجليزية</option><option>التربية الإسلامية</option>
+                    <option>الدراسات الاجتماعية</option>
+                </select>
+            </td>
+            <td class="label">الفترة:</td>
+            <td>
+                <select><option>الأولى</option><option>الثانية</option></select>
+            </td>
+        </tr>
+    </table>
+
+    <table class="main-table" style="margin-top: -١px;">
+        <tr>
+            <td class="label" style="width: ١٠٠%; border-bottom: none; background: #eee; text-align: center;">وصف الواقعة والأداة المستخدمة</td>
+        </tr>
+        <tr>
+            <td style="padding: ٠;"><textarea placeholder="اكتب تفاصيل ما حدث بدقة..."></textarea></td>
+        </tr>
+    </table>
+
+    <table class="main-table" style="margin-top: -١px;">
+        <tr>
+            <td class="label" style="height: ٤٠px;">إفادة الطالب:</td>
+            <td colspan="٣">...........................................................................................
+...........................................................................................
+...........................................................................................</td>
+        </tr>
+        <tr>
+            <td class="label">قرار رئيس اللجنة:</td>
+            <td colspan="٣"><input type="text" placeholder="القرار المتخذ حسب الأنظمة"></td>
+        </tr>
+    </table>
+
+    <table class="sig-table">
+        <tr>
+            <td>
+                <span class="sig-title">المراقب</span>
+                 <input type="text" class="sig-name-input"><br><br>
+                التوقيع: .....................
+            </td>
+            <td>
+                <span class="sig-title">رئيس اللجنة</span>
+                 <input type="text" class="sig-name-input"><br><br>
+                التوقيع: .....................
+            </td>
+            <td>
+                <span class="sig-title">مدير المدرسة</span>
+               <input type="text" class="sig-name-input" value=""><br><br>
+                الختم الرسمي
+            </td>
+        </tr>
+    </table>
+</div>
+
+</body>
+</html>
