@@ -34,7 +34,7 @@
         }
 
         .logo-img {
-            height: 60px; /* الارتفاع المطلوب */
+            height: 55px; /* تقليل الطول كما طلبت */
             width: auto;
             filter: drop-shadow(0 2px 4px rgba(0,0,0,0.2));
         }
@@ -57,7 +57,7 @@
 
         .welcome-section {
             text-align: center;
-            margin: 25px 0 10px 0;
+            margin: 20px 0 10px 0;
         }
 
         .welcome-section h2 {
@@ -72,13 +72,13 @@
             max-width: 1000px;
             margin: 10px auto;
             padding: 0 15px;
-            align-items: start; /* لتقليل طول الكروت وتثبيتها بالأعلى */
+            align-items: start; 
         }
 
         .system-card {
             background: white;
             border-radius: 12px;
-            padding: 20px 15px; /* تقليل الطول */
+            padding: 15px 10px; /* تقليل طول الكرت */
             text-align: center;
             text-decoration: none;
             color: #333;
@@ -94,19 +94,19 @@
         }
 
         .system-card .icon {
-            font-size: 40px;
-            margin-bottom: 10px;
+            font-size: 35px; /* تقليل حجم الأيقونة */
+            margin-bottom: 8px;
             display: block;
         }
 
         .system-card h3 {
             margin: 5px 0;
-            font-size: 18px;
+            font-size: 17px;
             color: #1a2a40;
         }
 
         .system-card p {
-            font-size: 13px;
+            font-size: 12px;
             color: #777;
             margin: 0;
         }
@@ -126,18 +126,14 @@
 
     <header>
         <div class="header-container">
-            <img src="https://raw.githubusercontent.com/alhejaili/assets/main/moe_logo.png" 
-                 onerror="this.src='https://upload.wikimedia.org/wikipedia/ar/archive/1/11/20211124115124%21Logo_of_Ministry_of_Education_%28Saudi_Arabia%29.png'" 
-                 class="logo-img" alt="وزارة التعليم">
+            <img src="./assets/moe_logo.png" class="logo-img" alt="وزارة التعليم" onerror="this.src='https://upload.wikimedia.org/wikipedia/ar/archive/1/11/20211124115124%21Logo_of_Ministry_of_Education_%28Saudi_Arabia%29.png'">
             
             <div class="title-area">
                 <h1>نظام الشاعري التعليمي</h1>
-                <p></p>
+                <p>مدارس العقيق الأهلية بالمدينة المنورة</p>
             </div>
 
-            <img src="https://raw.githubusercontent.com/alhejaili/assets/main/aqeeq_logo.png" 
-                 onerror="this.style.opacity='0.5'; this.alt='يرجى رفع aqeeq_logo.png';"
-                 class="logo-img" alt="مدارس العقيق">
+            <img src="./assets/aqeeq_logo.png" class="logo-img" alt="مدارس العقيق" onerror="this.style.opacity='0.5';">
         </div>
     </header>
 
@@ -161,7 +157,7 @@
         <a href="absence.html" class="system-card">
             <span class="icon">🚫</span>
             <h3>محضر إثبات غياب</h3>
-            <p>توثيق الغياب.</p>
+            <p>توثيق الغياب (نموذج ٢٢).</p>
         </a>
 
         <a href="cheating.html" class="system-card">
@@ -172,7 +168,7 @@
     </div>
 
     <footer>
-        نظام الشاعري التعليمي © ٢٠٢٦ |  بواسطة <b>أ/ عبدالرحمن الحجيلي</b>
+        نظام الشاعري التعليمي © ٢٠٢٦ | تم التطوير بواسطة <b>أ/ عبدالرحمن الحجيلي</b>
     </footer>
 
 </body>
