@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <title>نظام الشاعري لإصدار بطاقات الجلوس</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <style>
+        :root { --card-width: 7cm; --card-height: 10cm; --primary-color: #2c3e50; }
+        body { font-family: 'Cairo', sans-serif; background-color: #f4f7f6; margin: 0; padding: 20px; }
+        .admin-panel { background: white; padding: 25px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); max-width: 950px; margin: 0 auto 30px auto; border-top: 6px solid var(--primary-color); }
+        .btn-generate { background-color: #27ae60; color: white; padding: 15px; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 20px; width: 100%; }
+        #printArea { display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; }
+        .card { width: var(--card-width); height: var(--card-height); border: 1.5px solid #000; background: white; padding: 12px; box-sizing: border-box; display: flex; flex-direction: column; page-break-inside: avoid; }
+        .header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #000; padding-bottom: 5px; height: 75px; }
+        .header img { max-height: 50px; object-fit: contain; }
+        .info-row { display: flex; margin-bottom: 12px; font-size: 18px; }
+        .label { color: red; font-weight: bold; min-width: 90px; }
+        .value { flex: 1; font-weight: bold; text-align: right; }
+        .prepared-by { text-align: center; margin-top: 15px; font-weight: bold; }
+        @media print { .admin-panel, .no-print { display: none !important; } }
+    </style>
+</head>
+<body>
+    <div class="admin-panel">
+        <h2 style="text-align:center; color:var(--primary-color);">نظام الشاعري لإصدار بطاقات الجلوس</h2>
+        <div style="background:#eef2f3; padding:15px; border-radius:8px; margin-bottom:15px;">
+            <p style="margin-bottom:10px;">📥 استيراد من إكسل:</p>
+            <input type="file" accept=".xlsx, .xls" onchange="importFullData(this)">
+        </div>
+        <button class="btn-generate" onclick="generateCards()">توليد البطاقات والطباعة</button>
+        <div class="prepared-by">إعداد المعلم / عبدالرحمن سعد الحجيلي</div>
+    </div>
+    <div id="printArea"></div>
+
+    <script>
+        const imgMinistry = "ministry-logo.png"; const imgSchool = "alaqeeq-logo.png";
+        let studentsList = [];
+        function importFullData(input) {
+            const file = input.files[0]; const reader = new FileReader();
+            reader.onload = function(e) {
+                const data = new Uint8Array(e.target.result);
+                const workbook = XLSX.read(data, {type: 'array'});
+                const json = XLSX.utils.sheet_to_json(workbook.Sheets[workbook.SheetNames[0]], {header: 1});
+                studentsList = json.slice(1).map(row => ({ name: row[0], seatNo: row[1], grade: row[2], section: row[3], committee: row[4] }));
+                alert("تم استيراد البيانات بنجاح.");
+            };
+            reader.readAsArrayBuffer(file);
+        }
+        function generateCards() {
+            const area = document.getElementById('printArea'); area.innerHTML = "";
+            studentsList.forEach(st => {
+                area.innerHTML += `<div class="card">
+                    <div class="header"><img src="${imgMinistry}"><div style="font-size:8px; font-weight:bold; text-align:center;">المملكة العربية السعودية<br>تعليم المدينة المنورة<br>مدارس العقيق الأهلية</div><img src="${imgSchool}"></div>
+                    <div style="margin-top:20px;">
+                        <div class="info-row"><span class="label">الطالب:</span><span class="value">${st.name}</span></div>
+                        <div class="info-row"><span class="label">الصف:</span><span class="value">${st.grade}</span></div>
+                        <div class="info-row"><span class="label">رقم اللجنة:</span><span class="value">${st.committee}</span></div>
+                        <div style="text-align:center; border-top:1.5px solid #000; margin-top:20px; padding-top:10px;">
+                            <span style="color:red; font-weight:bold; display:block;">رقم الجلوس</span>
+                            <span style="font-size:28px; font-weight:bold;">${st.seatNo}</span>
+                        </div>
+                    </div>
+                </div>`;
+            });
+            setTimeout(() => { window.print(); }, 500);
+        }
+    </script>
+</body>
+</html>
