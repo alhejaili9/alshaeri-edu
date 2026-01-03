@@ -17,7 +17,6 @@
             min-height: 100vh;
         }
 
-        /* الهيدر العلوي */
         header {
             background: #1a2a40;
             color: white;
@@ -35,7 +34,8 @@
         }
 
         .logo-img {
-            height: 60px;
+            height: 60px; /* الارتفاع المطلوب */
+            width: auto;
             filter: drop-shadow(0 2px 4px rgba(0,0,0,0.2));
         }
 
@@ -47,7 +47,6 @@
             margin: 0;
             font-family: 'Amiri', serif;
             font-size: 24px;
-            letter-spacing: 1px;
         }
 
         .title-area p {
@@ -56,19 +55,16 @@
             opacity: 0.9;
         }
 
-        /* القسم الترحيبي */
         .welcome-section {
             text-align: center;
-            margin: 30px 0 10px 0;
+            margin: 25px 0 10px 0;
         }
 
         .welcome-section h2 {
             color: #1a2a40;
             font-size: 22px;
-            margin-bottom: 5px;
         }
 
-        /* شبكة الأنظمة */
         .main-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
@@ -76,14 +72,13 @@
             max-width: 1000px;
             margin: 10px auto;
             padding: 0 15px;
-            /* تم إزالة flex-grow لمنع تمدد الكروت طولياً */
-            align-items: start; 
+            align-items: start; /* لتقليل طول الكروت وتثبيتها بالأعلى */
         }
 
         .system-card {
             background: white;
             border-radius: 12px;
-            padding: 25px 15px; /* تقليل الحشو لتقليل الطول */
+            padding: 20px 15px; /* تقليل الطول */
             text-align: center;
             text-decoration: none;
             color: #333;
@@ -91,23 +86,21 @@
             transition: all 0.3s ease;
             border: 1px solid #eee;
             border-top: 5px solid #1a2a40;
-            height: auto; /* التأكد من أن الطول يتناسب مع المحتوى */
         }
 
         .system-card:hover {
             transform: translateY(-5px);
             box-shadow: 0 10px 20px rgba(0,0,0,0.1);
-            border-color: #1a2a40;
         }
 
         .system-card .icon {
             font-size: 40px;
-            margin-bottom: 15px;
+            margin-bottom: 10px;
             display: block;
         }
 
         .system-card h3 {
-            margin: 8px 0;
+            margin: 5px 0;
             font-size: 18px;
             color: #1a2a40;
         }
@@ -115,11 +108,9 @@
         .system-card p {
             font-size: 13px;
             color: #777;
-            line-height: 1.5;
             margin: 0;
         }
 
-        /* التذييل */
         footer {
             background: #fff;
             padding: 15px;
@@ -127,12 +118,7 @@
             border-top: 1px solid #ddd;
             color: #888;
             font-size: 12px;
-            margin-top: auto; /* دفع التذييل للأسفل دائماً */
-        }
-
-        .footer-name {
-            color: #1a2a40;
-            font-weight: bold;
+            margin-top: auto;
         }
     </style>
 </head>
@@ -140,14 +126,18 @@
 
     <header>
         <div class="header-container">
-            <img src="https://raw.githubusercontent.com/alhejaili/assets/main/moe_logo.png" class="logo-img" alt="وزارة التعليم">
+            <img src="https://raw.githubusercontent.com/alhejaili/assets/main/moe_logo.png" 
+                 onerror="this.src='https://upload.wikimedia.org/wikipedia/ar/archive/1/11/20211124115124%21Logo_of_Ministry_of_Education_%28Saudi_Arabia%29.png'" 
+                 class="logo-img" alt="وزارة التعليم">
             
             <div class="title-area">
                 <h1>نظام الشاعري التعليمي</h1>
                 <p></p>
             </div>
 
-            <img src="https://raw.githubusercontent.com/alhejaili/assets/main/aqeeq_logo.png" class="logo-img" alt="مدارس العقيق">
+            <img src="https://raw.githubusercontent.com/alhejaili/assets/main/aqeeq_logo.png" 
+                 onerror="this.style.opacity='0.5'; this.alt='يرجى رفع aqeeq_logo.png';"
+                 class="logo-img" alt="مدارس العقيق">
         </div>
     </header>
 
@@ -165,26 +155,25 @@
         <a href="seating.html" class="system-card">
             <span class="icon">🏷️</span>
             <h3>نظام أرقام الجلوس</h3>
-            <p>توليد بطاقات أرقام الجلوس وتوزيع الطلاب على القاعات.</p>
+            <p>توليد بطاقات الجلوس وتوزيع القاعات.</p>
         </a>
 
         <a href="absence.html" class="system-card">
             <span class="icon">🚫</span>
             <h3>محضر إثبات غياب</h3>
-            <p>توثيق حالات غياب الطلاب عن الاختبارات.</p>
+            <p>توثيق الغياب.</p>
         </a>
 
         <a href="cheating.html" class="system-card">
             <span class="icon">📝</span>
             <h3>محضر إثبات غش</h3>
-            <p>إصدار محاضر رسمية لحالات الغش وفق اللوائح.</p>
+            <p>إصدار محاضر حالات الغش الرسمية.</p>
         </a>
     </div>
 
     <footer>
-        نظام الشاعري التعليمي © ٢٠٢٦ |  بواسطة <span class="footer-name">أ/ عبدالرحمن الحجيلي</span>
+        نظام الشاعري التعليمي © ٢٠٢٦ |  بواسطة <b>أ/ عبدالرحمن الحجيلي</b>
     </footer>
 
 </body>
 </html>
-
