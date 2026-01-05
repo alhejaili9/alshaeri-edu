@@ -33,7 +33,7 @@
         }
 
         .logo-img { 
-            height: 60px; /* طول متناسق للشعار */
+            height: 60px; 
             width: auto; 
         }
 
@@ -61,7 +61,6 @@
             font-size: 24px; 
         }
 
-        /* حل مشكلة طول الكروت الزائد */
         .main-grid { 
             display: grid; 
             grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); 
@@ -69,7 +68,7 @@
             max-width: 1100px; 
             margin: 10px auto; 
             padding: 0 20px; 
-            align-items: start; /* يمنع الكروت من التمدد الطولي */
+            align-items: start; 
         }
 
         .system-card { 
@@ -82,7 +81,7 @@
             box-shadow: 0 4px 10px rgba(0,0,0,0.05); 
             transition: 0.3s; 
             border-top: 6px solid #1a2a40;
-            height: auto; /* يجعل الطول يتناسب مع المحتوى */
+            height: auto; 
         }
 
         .system-card:hover { 
@@ -139,8 +138,8 @@
     <div class="main-grid">
         <a href="schedules.html" class="system-card">
             <span class="icon">📅</span>
-            <h3>نظام جدوال الاختبارات</h3>
-            <p>إدارة وتنظيم و طباعة جداول الاختبارات .</p>
+            <h3>نظام جداول الاختبارات</h3>
+            <p>إدارة وتنظيم وطباعة جداول الاختبارات.</p>
         </a>
 
         <a href="seating.html" class="system-card">
@@ -160,10 +159,14 @@
             <h3>محضر إثبات غش</h3>
             <p>إصدار محاضر رسمية لحالات الغش وفق اللوائح.</p>
         </a>
+
+        <a href="observations.html" class="system-card">
+            <span class="icon">📋</span>
+            <h3>نظام كشف الملاحظة</h3>
+            <p>تسجيل وتوثيق ملاحظات المعلمين أثناء اللجان.</p>
+        </a>
     </div>
 
     <footer>نظام الشاعري التعليمي © ٢٠٢٦ | تم التطوير بواسطة أ/ عبدالرحمن الحجيلي</footer>
 </body>
 </html>
-
-
