@@ -6,7 +6,15 @@
     <title>كشف رصد الدرجات - مدارس العقيق</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <style>
-        @page { size: A4; margin: 0; }
+        /* ضبط إعدادات الصفحة لتحريك المحتوى لأسفل في كل الصفحات وإخفاء بيانات الهوامش */
+        @page { 
+            size: A4; 
+            margin-top: 15mm; /* مسافة لتبتعد عن الحافة العلوية في كل الصفحات */
+            margin-bottom: 10mm;
+            margin-left: 0;
+            margin-right: 0;
+        }
+        
         body { font-family: 'Traditional Arabic', serif; background-color: #e0e0e0; margin: 0; padding: 20px 0; -webkit-print-color-adjust: exact; font-size: 18px; }
         
         .container { 
@@ -29,7 +37,7 @@
         
         select, input { font-family: 'Traditional Arabic'; font-size: 17px; padding: 2px; border: 1px solid #ccc; background: white; outline: none; }
         
-        table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+        table { width: 100%; border-collapse: collapse; margin-top: 10px; table-layout: fixed; }
         table, th, td { border: 1px solid #000; }
         th { background: #f2f2f2; padding: 8px; font-size: 16px; }
         td { padding: 4px; text-align: center; }
@@ -42,10 +50,9 @@
         .btn-excel { background: #2c3e50; }
         .btn-sort { background: #8e44ad; }
         
-        /* إصلاح قسم التواقيع: استخدام Flexbox لضمان بقائها داخل البرواز */
         .footer-sigs { 
-            margin-top: auto; 
-            padding-top: 30px; 
+            margin-top: 30px; 
+            padding-top: 10px; 
             display: flex; 
             justify-content: space-between; 
             align-items: flex-start;
@@ -57,18 +64,29 @@
             width: 23%; 
             display: flex; 
             flex-direction: column; 
-            gap: 40px; 
+            gap: 35px; 
             text-align: center;
         }
         .sig-title-input { border: none; font-weight: bold; text-align: center; font-size: 17px; background: transparent; width: 100%; }
         .sig-name-input { border: none; border-bottom: 1px dotted #000; text-align: center; font-size: 16px; background: transparent; width: 100%; }
         
         @media print { 
-            .toolbar, .btn-remove { display: none; } 
+            .toolbar, .btn-remove { display: none !important; } 
             body { background: white; padding: 0; } 
-            .container { box-shadow: none; border: 6px double #000; margin: 0; width: 100%; }
-            select, input { border: none !important; -webkit-appearance: none; appearance: none; }
+            .container { 
+                box-shadow: none; 
+                margin: 0; 
+                width: 100%; 
+                min-height: auto; 
+                border: none !important; /* إزالة الإطار عند الطباعة */
+                outline: none !important;
+                padding: 0 15mm; /* ترك المسافة العلوية لـ @page لضمان عملها في كل الصفحات */
+            }
+            thead { display: table-header-group; } 
+            tr { page-break-inside: avoid; } 
+            select, input { border: none !important; -webkit-appearance: none; appearance: none; color: black; }
             .sig-name-input { border-bottom: none !important; }
+            .info-grid { background: white !important; border: 1px solid #000; }
         }
     </style>
 </head>
@@ -102,7 +120,15 @@
         <div class="info-item">نوع الرصد: <select id="type-list" onchange="checkType(this)"><option>اختبار فتري</option><option>عملي</option><option selected>نظري نهائي</option><option>مقالي نهائي</option><option value="custom">إدخال يدوي...</option></select> <input type="text" id="custom-type" style="display:none; width:100px; margin-right:5px;" placeholder="اكتب النوع"></div>
     </div>
     <table id="mainTable">
-        <thead><tr><th style="width: 30px;">م</th><th>اسم الطالب</th><th style="width: 80px;">الدرجة</th><th>ملاحظات</th><th class="btn-remove" style="width: 30px;">حذف</th></tr></thead>
+        <thead>
+            <tr>
+                <th style="width: 40px;">م</th>
+                <th>اسم الطالب</th>
+                <th style="width: 90px;">الدرجة</th>
+                <th>ملاحظات</th>
+                <th class="btn-remove" style="width: 40px;">حذف</th>
+            </tr>
+        </thead>
         <tbody id="grades-table"></tbody>
     </table>
 
@@ -148,8 +174,8 @@
         row.innerHTML = `
             <td class="row-index"></td>
             <td><input type="text" class="student-name-input" value="${name}"></td>
-            <td><input type="text" class="student-score" style="width:50px; text-align:center;" value="${score}"></td>
-            <td><input type="text" style="width:90%; border:none;"></td>
+            <td><input type="text" class="student-score" style="width:100%; text-align:center; border:none; background:transparent;" value="${score}"></td>
+            <td><input type="text" style="width:100%; border:none; background:transparent;"></td>
             <td class="btn-remove"><button onclick="this.parentElement.parentElement.remove(); reIndex();" style="color:red; border:none; background:none; cursor:pointer;">X</button></td>
         `;
         tbody.appendChild(row);
