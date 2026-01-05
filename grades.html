@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>كشف رصد الدرجات - مدارس العقيق</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <style>
+        @page { size: A4; margin: 0; }
+        body { font-family: 'Traditional Arabic', serif; background-color: #e0e0e0; margin: 0; padding: 20px 0; -webkit-print-color-adjust: exact; font-size: 18px; }
+        .container { background-color: #fff; width: 210mm; min-height: 297mm; margin: 0 auto; padding: 10mm 15mm; box-shadow: 0 0 20px rgba(0,0,0,0.3); box-sizing: border-box; border: 6px double #333; outline: 2px solid #333; outline-offset: -12px; }
+        header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; padding-bottom: 5px; border-bottom: 2px solid #333; }
+        .header-right { text-align: center; line-height: 1.3; font-weight: bold; font-size: 17px; width: 40%; }
+        .header-left { display: flex; gap: 8px; align-items: center; width: 60%; justify-content: flex-end; }
+        .logo-box { width: 60px; height: 60px; display: flex; align-items: center; justify-content: center; }
+        .logo-box img { max-width: 100%; max-height: 100%; object-fit: contain; }
+        .main-title { text-align: center; font-size: 24px; font-weight: bold; text-decoration: underline; margin: 10px 0; }
+        .info-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; background: #f9f9f9; padding: 10px; border: 1px solid #ddd; margin-bottom: 15px; }
+        .info-item { display: flex; align-items: center; gap: 10px; font-weight: bold; }
+        select, input { font-family: 'Traditional Arabic'; font-size: 17px; padding: 2px; border: 1px solid #ccc; background: white; }
+        table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+        table, th, td { border: 1px solid #000; }
+        th { background: #f2f2f2; padding: 8px; font-size: 16px; }
+        td { padding: 5px; text-align: center; }
+        .student-name-input { text-align: right; padding-right: 5px; width: 95%; border: none; font-family: inherit; font-size: 18px; }
+        .toolbar { width: 210mm; margin: 0 auto 10px auto; display: flex; gap: 5px; flex-wrap: wrap; justify-content: center; }
+        .btn { padding: 6px 12px; border: none; border-radius: 4px; cursor: pointer; font-weight: bold; color: white; font-family: 'Tajawal'; font-size: 13px; }
+        .btn-print { background: #27ae60; }
+        .btn-excel { background: #2c3e50; }
+        .btn-sort { background: #8e44ad; }
+        .footer-sigs { margin-top: 30px; display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; text-align: center; font-weight: bold; font-size: 16px; }
+        @media print { .toolbar, .btn-remove { display: none; } body { background: white; padding: 0; } .container { box-shadow: none; border: 6px double #000; } select, input { border: none !important; -webkit-appearance: none; } }
+    </style>
+</head>
+<body>
+<div class="toolbar">
+    <button class="btn btn-print" onclick="window.print()">🖨️ طباعة</button>
+    <button class="btn btn-excel" onclick="document.getElementById('excel_file').click()">📊 استيراد Excel</button>
+    <input type="file" id="excel_file" style="display:none;" accept=".xlsx, .xls" onchange="importExcel(event)">
+    <button class="btn btn-sort" onclick="sortNames('asc')">أ-ي</button>
+    <button class="btn btn-sort" onclick="sortNames('desc')">ي-أ</button>
+    <button class="btn btn-sort" onclick="sortGrades('desc')">الأعلى درجة</button>
+    <button class="btn btn-sort" onclick="sortGrades('asc')">الأقل درجة</button>
+    <button class="btn btn-print" style="background:#2980b9" onclick="addRow()">➕ إضافة يدوي</button>
+</div>
+<div class="container">
+    <header>
+        <div class="header-right"><div>المملكة العربية السعودية</div><div>وزارة التعليم</div><div>مدارس العقيق الأهلية</div></div>
+        <div class="header-left">
+            <div class="logo-box"><img src="ministry-logo.png" alt="وزارة التعليم"></div>
+            <div class="logo-box"><img src="aqeeq_logo.png" alt="مدارس العقيق"></div>
+        </div>
+    </header>
+    <div class="main-title">كشف رصد درجات الطلاب</div>
+    <div class="info-grid">
+        <div class="info-item">المادة: <select id="subject-list"></select></div>
+        <div class="info-item">الصف: <select><option>أول متوسط</option><option>ثاني متوسط</option><option>ثالث متوسط</option></select></div>
+        <div class="info-item">الفصل: <select id="class-num"></select></div>
+        <div class="info-item">التاريخ: <select id="h-day"></select> <select id="h-month"></select> <select id="h-year"></select></div>
+        <div class="info-item">الدرجة العظمى: <select id="max-grade-list"></select></div>
+        <div class="info-item">نوع الرصد: <select id="type-list" onchange="checkType(this)"><option>اختبار فتري</option><option>عملي</option><option selected>نظري نهائي</option><option>مقالي نهائي</option><option value="custom">إدخال يدوي...</option></select> <input type="text" id="custom-type" style="display:none; width:100px; margin-right:5px;" placeholder="اكتب النوع"></div>
+    </div>
+    <table id="mainTable">
+        <thead><tr><th style="width: 30px;">م</th><th>اسم الطالب</th><th style="width: 80px;">الدرجة</th><th>ملاحظات</th><th class="btn-remove" style="width: 30px;">حذف</th></tr></thead>
+        <tbody id="grades-table"></tbody>
+    </table>
+    <div class="footer-sigs">
+        <div>المصحح<br><br>...................</div>
+        <div>المراجع<br><br>...................</div>
+        <div>المدقق<br><br>...................</div>
+        <div>مدير المدرسة<br><br>...................</div>
+    </div>
+</div>
+<script>
+    function toAr(num) { const id=['٠','١','٢','٣','٤','٥','٦','٧','٨','٩']; return num.toString().replace(/[0-9]/g, w=>id[+w]); }
+    function toEn(num) { const id={'٠':0,'١':1,'٢':2,'٣':3,'٤':4,'٥':5,'٦':6,'٧':7,'٨':8,'٩':9}; return num.replace(/[٠-٩]/g, w=>id[w]); }
+    
+    // تعبئة القوائم
+    const dSel=document.getElementById('h-day'); for(let i=1;i<=30;i++) dSel.innerHTML+=`<option>${toAr(i)}</option>`;
+    const hijriMonths=["محرم","صفر","ربيع الأول","ربيع الآخر","جمادى الأولى","جمادى الآخرة","رجب","شعبان","رمضان","شوال","ذو القعدة","ذو الحجة"];
+    const mSel=document.getElementById('h-month'); hijriMonths.forEach(m=>mSel.innerHTML+=`<option>${m}</option>`);
+    const ySel=document.getElementById('h-year'); for(let i=1447;i<=1455;i++) ySel.innerHTML+=`<option>${toAr(i)}هـ</option>`;
+    const cSel=document.getElementById('class-num'); for(let i=1;i<=6;i++) cSel.innerHTML+=`<option>${toAr(i)}</option>`;
+    const sSel=document.getElementById('subject-list'); ["الرياضيات","العلوم","اللغة العربية","الدراسات الإسلامية","الإنجليزي"].forEach(s=>sSel.innerHTML+=`<option>${s}</option>`);
+    const gSel=document.getElementById('max-grade-list'); for(let i=1;i<=100;i++) gSel.innerHTML+=`<option ${i===100?'selected':''}>${toAr(i)}</option>`;
+
+    function checkType(s) { document.getElementById('custom-type').style.display = (s.value === "custom") ? "inline-block" : "none"; }
+
+    function addRow(name="", score="") {
+        const tbody = document.getElementById('grades-table');
+        const row = document.createElement('tr');
+        row.innerHTML = `
+            <td class="row-index"></td>
+            <td><input type="text" class="student-name-input" value="${name}"></td>
+            <td><input type="text" class="student-score" style="width:50px; text-align:center;" value="${score}"></td>
+            <td><input type="text" style="width:90%; border:none;"></td>
+            <td class="btn-remove"><button onclick="this.parentElement.parentElement.remove(); reIndex();" style="color:red; border:none; background:none; cursor:pointer;">X</button></td>
+        `;
+        tbody.appendChild(row);
+        reIndex();
+    }
+
+    function reIndex() {
+        const rows = document.querySelectorAll('#grades-table tr');
+        rows.forEach((row, idx) => { row.querySelector('.row-index').innerText = toAr(idx + 1); });
+    }
+
+    function importExcel(e) {
+        const reader = new FileReader();
+        reader.onload = function(event) {
+            const workbook = XLSX.read(new Uint8Array(event.target.result), {type: 'array'});
+            const data = XLSX.utils.sheet_to_json(workbook.Sheets[workbook.SheetNames[0]], {header: 1});
+            document.getElementById('grades-table').innerHTML = "";
+            data.forEach(row => { if(row[0]) addRow(row[0], row[1] || ""); });
+        };
+        reader.readAsArrayBuffer(e.target.files[0]);
+    }
+
+    function sortNames(order) {
+        const tbody = document.getElementById('grades-table');
+        const rows = Array.from(tbody.querySelectorAll('tr'));
+        rows.sort((a, b) => {
+            let nameA = a.querySelector('.student-name-input').value;
+            let nameB = b.querySelector('.student-name-input').value;
+            return order === 'asc' ? nameA.localeCompare(nameB, 'ar') : nameB.localeCompare(nameA, 'ar');
+        });
+        rows.forEach(row => tbody.appendChild(row));
+        reIndex();
+    }
+
+    function sortGrades(order) {
+        const tbody = document.getElementById('grades-table');
+        const rows = Array.from(tbody.querySelectorAll('tr'));
+        rows.sort((a, b) => {
+            let scoreA = parseFloat(toEn(a.querySelector('.student-score').value)) || 0;
+            let scoreB = parseFloat(toEn(b.querySelector('.student-score').value)) || 0;
+            return order === 'asc' ? scoreA - scoreB : scoreB - scoreA;
+        });
+        rows.forEach(row => tbody.appendChild(row));
+        reIndex();
+    }
+
+    for(let i=0; i<5; i++) addRow();
+</script>
+</body>
+</html>
