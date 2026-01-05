@@ -42,17 +42,32 @@
         .btn-excel { background: #2c3e50; }
         .btn-sort { background: #8e44ad; }
         
-        /* قسم التواقيع المعدل */
-        .footer-sigs { margin-top: auto; padding-top: 30px; display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; text-align: center; page-break-inside: avoid; }
-        .sig-box { display: flex; flex-direction: column; gap: 40px; }
-        .sig-title-input { border: none; font-weight: bold; text-align: center; font-size: 17px; background: transparent; }
-        .sig-name-input { border: none; border-bottom: 1px dotted #000; text-align: center; font-size: 16px; background: transparent; }
+        /* إصلاح قسم التواقيع: استخدام Flexbox لضمان بقائها داخل البرواز */
+        .footer-sigs { 
+            margin-top: auto; 
+            padding-top: 30px; 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: flex-start;
+            width: 100%;
+            box-sizing: border-box;
+            page-break-inside: avoid; 
+        }
+        .sig-box { 
+            width: 23%; 
+            display: flex; 
+            flex-direction: column; 
+            gap: 40px; 
+            text-align: center;
+        }
+        .sig-title-input { border: none; font-weight: bold; text-align: center; font-size: 17px; background: transparent; width: 100%; }
+        .sig-name-input { border: none; border-bottom: 1px dotted #000; text-align: center; font-size: 16px; background: transparent; width: 100%; }
         
         @media print { 
             .toolbar, .btn-remove { display: none; } 
             body { background: white; padding: 0; } 
             .container { box-shadow: none; border: 6px double #000; margin: 0; width: 100%; }
-            select, input { border: none !important; -webkit-appearance: none; }
+            select, input { border: none !important; -webkit-appearance: none; appearance: none; }
             .sig-name-input { border-bottom: none !important; }
         }
     </style>
