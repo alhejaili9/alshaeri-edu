@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>كشف ملاحظة المعلمين - مدارس العقيق</title>
+    <style>
+        @page {
+            size: A4;
+            margin: 0;
+        }
+
+        body { 
+            font-family: 'Traditional Arabic', serif; 
+            background-color: #e0e0e0; 
+            margin: 0; 
+            padding: 20px 0; 
+            -webkit-print-color-adjust: exact;
+            font-size: 18px; 
+        }
+
+        .container { 
+            background-color: #fff; 
+            width: 210mm; 
+            height: 297mm; 
+            margin: 0 auto; 
+            padding: 10mm 15mm; 
+            box-shadow: 0 0 20px rgba(0,0,0,0.3);
+            position: relative; 
+            box-sizing: border-box;
+            border: 6px double #333;
+            outline: 2px solid #333;
+            outline-offset: -12px;
+        }
+        
+        header { 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #eee;
+        }
+
+        .header-right { 
+            text-align: center; 
+            line-height: 1.6; 
+            font-weight: bold; 
+            font-size: 17px; 
+            color: #1a1a1a;
+            width: 40%;
+        }
+
+        .header-left { display: flex; gap: 8px; align-items: center; width: 60%; justify-content: flex-end; }
+        .logo-box { width: 60px; height: 60px; display: flex; align-items: center; justify-content: center; }
+        .logo-box img { max-width: 100%; max-height: 100%; object-fit: contain; }
+
+        .title-box { text-align: center; margin-bottom: 10px; }
+        .main-title { font-size: 24px; font-weight: bold; text-decoration: underline; margin-bottom: 10px; }
+        .controls-row { 
+            display: flex; justify-content: center; gap: 10px; align-items: center; 
+            font-weight: bold; font-size: 16px; background: #f9f9f9; padding: 6px; border: 1px solid #ddd;
+        }
+        
+        .toolbar { width: 210mm; margin: 0 auto 10px auto; display: flex; justify-content: space-between; align-items: center; }
+        .sync-option { background: #2c3e50; padding: 8px 15px; border-radius: 5px; font-size: 14px; color: #fff; display: flex; align-items: center; gap: 8px; cursor: pointer; }
+
+        table { width: 100%; border-collapse: collapse; table-layout: fixed; margin-top: 5px; }
+        table, th, td { border: 1.5px solid #000; }
+        th { background-color: #f2f2f2; padding: 6px 2px; font-size: 15px; color: #000; }
+        td { height: 36px; text-align: center; vertical-align: middle; font-size: 16px; }
+        
+        select, input { width: 100%; border: none; outline: none; background: transparent; font-family: inherit; font-size: 16px; text-align: center; color: #000; -webkit-appearance: none; }
+
+        .footer-sigs { display: flex; justify-content: space-around; margin-top: 30px; text-align: center; }
+        .sig-item { width: 30%; font-weight: bold; font-size: 17px; }
+        .sig-item input { margin-top: 8px; font-weight: bold; border-bottom: 1px dotted #000; width: 85%; }
+
+        .print-btn { padding: 10px 25px; background: #27ae60; color: white; border: none; border-radius: 5px; cursor: pointer; font-weight: bold; }
+
+        .hidden-cell { display: none; }
+
+        @media print {
+            .toolbar { display: none; }
+            body { background: white; padding: 0; margin: 0; }
+            .container { 
+                box-shadow: none; 
+                margin: 0; 
+                width: 210mm; 
+                height: 297mm;
+                border: 6px double #000;
+                padding: 10mm 15mm;
+            }
+            .controls-row { border: 1px solid #000; background: #fff; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="toolbar">
+    <div class="sync-option">
+        <input type="checkbox" id="merge-check" onchange="toggleMerge()" style="width: auto;"> 
+        <label for="merge-check">تفعيل دمج المادة والوقت</label>
+    </div>
+    <button class="print-btn" onclick="window.print()">🖨️ طباعة الكشف الرسمي (A4)</button>
+</div>
+
+<div class="container">
+    <header>
+        <div class="header-right">
+            <div>المملكة العربية السعودية</div>
+            <div>وزارة التعليم</div>
+            <div>إدارة التعليم بمنطقة المدينة المنورة</div>
+            <div>مدارس العقيق الأهلية</div>
+            <div style="font-size: 14px;">(المرحلة المتوسطة)</div>
+        </div>
+        <div class="header-left">
+            <div class="logo-box"><img src="https://raw.githubusercontent.com/YourUsername/YourRepo/main/ministry-logo.png" alt="وزارة التعليم"></div>
+            <div class="logo-box"><img src="https://raw.githubusercontent.com/YourUsername/YourRepo/main/aqeeq_logo.png" alt="مدارس العقيق"></div>
+            <div class="logo-box"><img src="https://raw.githubusercontent.com/YourUsername/YourRepo/main/cog.png" alt="شعار"></div>
+            <div class="logo-box"><img src="https://raw.githubusercontent.com/YourUsername/YourRepo/main/accr.png" alt="اعتماد"></div>
+        </div>
+    </header>
+
+    <div class="title-box">
+        <div class="main-title">كشف ملاحظة المعلمين للاختبارات النهائية</div>
+        <div class="controls-row">
+            <span>اليوم:</span>
+            <select style="width: 70px;"><option>الأحد</option><option>الاثنين</option><option>الثلاثاء</option><option selected>الأربعاء</option><option>الخميس</option></select>
+            <span>التاريخ:</span>
+            <select id="h-day" style="width: 45px;"></select>
+            <select id="h-month" style="width: 100px;"></select>
+            <select id="h-year" style="width: 80px;"></select> <span>الفترة:</span>
+            <select style="width: 75px;"><option>الأولى</option><option>الثانية</option></select>
+        </div>
+    </div>
+
+    <table>
+        <thead>
+            <tr>
+                <th style="width: 30px;">م</th>
+                <th style="width: 190px;">اسم المعلـم</th>
+                <th style="width: 55px;">اللجنة</th>
+                <th>المـادة</th>
+                <th style="width: 65px;">مـن</th>
+                <th style="width: 65px;">إلـى</th>
+                <th style="width: 120px;">التوقيع</th> </tr>
+        </thead>
+        <tbody id="main-table"></tbody>
+    </table>
+
+    <div class="footer-sigs">
+        <div class="sig-item"><div>وكيل المدرسة</div><input type="text"></div>
+        <div class="sig-item"><div>المشرف الأكاديمي</div><input type="text"></div>
+        <div class="sig-item"><div>مدير المدرسة</div><input type="text"></div>
+    </div>
+</div>
+
+<script>
+    function toAr(num) {
+        const id = ['٠','١','٢','٣','٤','٥','٦','٧','٨','٩'];
+        return num.toString().replace(/[0-9]/g, w => id[+w]);
+    }
+
+    const teachers = [
+        "", "ابراهيم عبدالمنعم النجار", "عبدالله منصور العنزي", "خالد حامد البلوي", 
+        "نواف عبدالله الحربي", "عماد عبدالرؤوف سليم", "اسامه الحجيلي", 
+        "محمد عبدالفتاح أبوخضير", "أمير محمد مرجان", "ياسر عارف اسماعيل", 
+        "عزي عزي علي حسن", "جمال الحداد", "طلال عياش الجهني", 
+        "غازي عبدالله الحسيني", "أحمد بشار عالوه", "مصطفى الرشيدي"
+    ];
+
+    const subjects = ["القرآن الكريم", "الدراسات الإسلامية", "اللغة العربية", "الرياضيات", "العلوم", "اللغة الإنجليزية", "الدراسات الاجتماعية", "المهارات الرقمية", "التفكير الناقد"];
+    const times = ["٠٧:٠٠", "٠٧:٣٠", "٠٨:٠٠", "٠٨:٣٠", "٠٩:٠٠", "٠٩:٣٠", "١٠:٠٠", "١٠:٣٠", "١١:٠٠"];
+    const hijriMonths = ["محرم", "صفر", "ربيع الأول", "ربيع الآخر", "جمادى الأولى", "جمادى الآخرة", "رجب", "شعبان", "رمضان", "شوال", "ذو القعدة", "ذو الحجة"];
+
+    const dSel = document.getElementById('h-day');
+    for(let i=1; i<=30; i++) dSel.innerHTML += `<option>${toAr(i)}</option>`;
+    
+    const mSel = document.getElementById('h-month');
+    hijriMonths.forEach(m => mSel.innerHTML += `<option>${m}</option>`);
+
+    const ySel = document.getElementById('h-year');
+    for(let i=1447; i<=1455; i++) {
+        ySel.innerHTML += `<option>${toAr(i)}هـ</option>`;
+    }
+
+    const tbody = document.getElementById('main-table');
+    for (let i = 1; i <= 16; i++) {
+        let row = document.createElement('tr');
+        row.innerHTML = `
+            <td>${toAr(i)}</td>
+            <td><select>${teachers.map(t => `<option ${t===teachers[i]?'selected':''}>${t}</option>`).join('')}</select></td>
+            <td><select><option value=""></option>${Array.from({length:20}, (_,k)=>`<option>${toAr(k+1)}</option>`).join('')}</select></td>
+            <td class="merge-subject"><select>${subjects.map(s => `<option>${s}</option>`).join('')}</select></td>
+            <td class="merge-time-from"><select>${times.map(t => `<option ${t==='٠٩:٠٠'?'selected':''}>${t}</option>`).join('')}</select></td>
+            <td class="merge-time-to"><select>${times.map(t => `<option ${t==='١١:٠٠'?'selected':''}>${t}</option>`).join('')}</select></td>
+            <td></td>
+        `;
+        tbody.appendChild(row);
+    }
+
+    function toggleMerge() {
+        const isMerged = document.getElementById('merge-check').checked;
+        const subCells = document.querySelectorAll('.merge-subject');
+        const fromCells = document.querySelectorAll('.merge-time-from');
+        const toCells = document.querySelectorAll('.merge-time-to');
+        if (isMerged) {
+            subCells[0].rowSpan = 16; fromCells[0].rowSpan = 16; toCells[0].rowSpan = 16;
+            for (let i = 1; i < 16; i++) { subCells[i].classList.add('hidden-cell'); fromCells[i].classList.add('hidden-cell'); toCells[i].classList.add('hidden-cell'); }
+        } else {
+            subCells[0].rowSpan = 1; fromCells[0].rowSpan = 1; toCells[0].rowSpan = 1;
+            for (let i = 1; i < 16; i++) { subCells[i].classList.remove('hidden-cell'); fromCells[i].classList.remove('hidden-cell'); toCells[i].classList.remove('hidden-cell'); }
+        }
+    }
+</script>
+</body>
+</html>
