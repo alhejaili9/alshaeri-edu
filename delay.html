@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>محضر تأخر طالب - مدارس العقيق</title>
+    <style>
+        @page { size: A4; margin: 0; }
+        body { 
+            font-family: 'Traditional Arabic', serif; 
+            background-color: #e0e0e0; 
+            margin: 0; padding: 20px 0; 
+            -webkit-print-color-adjust: exact;
+            font-size: 19px; 
+        }
+        .container { 
+            background-color: #fff; width: 210mm; height: 297mm; 
+            margin: 0 auto; padding: 10mm 15mm; 
+            box-shadow: 0 0 20px rgba(0,0,0,0.3);
+            box-sizing: border-box;
+            border: 6px double #333;
+            outline: 2px solid #333;
+            outline-offset: -12px;
+        }
+        header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; padding-bottom: 5px; border-bottom: 2px solid #333; }
+        .header-right { text-align: center; line-height: 1.3; font-weight: bold; font-size: 17px; color: #1a1a1a; width: 40%; }
+        .header-left { display: flex; gap: 8px; align-items: center; width: 60%; justify-content: flex-end; }
+        .logo-box { width: 65px; height: 65px; display: flex; align-items: center; justify-content: center; }
+        .logo-box img { max-width: 100%; max-height: 100%; object-fit: contain; }
+        .title-box { text-align: center; margin-bottom: 15px; }
+        .main-title { font-size: 26px; font-weight: bold; text-decoration: underline; margin-bottom: 5px; }
+        .form-section { margin-top: 10px; line-height: 1.8; }
+        .row { display: flex; align-items: center; margin-bottom: 12px; gap: 10px; }
+        label { font-weight: bold; min-width: 110px; }
+        input[type="text"] { flex: 1; border: none; border-bottom: 1px dotted #000; font-family: inherit; font-size: 19px; outline: none; background: transparent; }
+        select { border: 1px solid #ccc; background: #f9f9f9; font-family: inherit; font-size: 18px; padding: 2px; }
+        .details-box { border: 1px solid #000; padding: 10px; margin-top: 15px; min-height: 100px; }
+        .student-sig-row { margin-top: 20px; text-align: left; padding-left: 50px; font-weight: bold; }
+        .footer-sigs { display: flex; justify-content: space-around; margin-top: 30px; text-align: center; }
+        .sig-item { width: 30%; font-weight: bold; font-size: 18px; display: flex; flex-direction: column; gap: 10px; }
+        .sig-item input { text-align: center; font-weight: bold; border: none; border-bottom: 1px solid #000; width: 90%; margin: 0 auto; background: transparent; }
+        .toolbar { width: 210mm; margin: 0 auto 10px auto; display: flex; justify-content: flex-end; }
+        .print-btn { padding: 10px 25px; background: #27ae60; color: white; border: none; border-radius: 5px; cursor: pointer; font-weight: bold; }
+        @media print {
+            .toolbar { display: none; }
+            body { background: white; padding: 0; margin: 0; }
+            .container { box-shadow: none; border: 6px double #000; }
+            input, select, textarea { border: none !important; -webkit-appearance: none; appearance: none; }
+        }
+    </style>
+</head>
+<body>
+<div class="toolbar"><button class="print-btn" onclick="window.print()">🖨️ طباعة النموذج</button></div>
+<div class="container">
+    <header>
+        <div class="header-right">
+            <div>المملكة العربية السعودية</div><div>وزارة التعليم</div><div>إدارة التعليم بمنطقة المدينة المنورة</div><div>مدارس العقيق الأهلية</div><div style="font-size: 14px;">(المرحلة المتوسطة)</div>
+        </div>
+        <div class="header-left">
+            <div class="logo-box"><img src="https://raw.githubusercontent.com/YourUsername/YourRepo/main/ministry-logo.png" alt="وزارة التعليم"></div>
+            <div class="logo-box"><img src="https://raw.githubusercontent.com/YourUsername/YourRepo/main/aqeeq_logo.png" alt="مدارس العقيق"></div>
+        </div>
+    </header>
+    <div class="title-box"><div class="main-title">محضر تأخير طالب عن الاختبار</div></div>
+    <div class="form-section">
+        <div class="row"><label>اسم الطـالب:</label><input type="text"></div>
+        <div class="row"><label>الصف الدراسي:</label><select id="student-class"><option>أول متوسط</option><option>ثاني متوسط</option><option>ثالث متوسط</option></select><label style="min-width: 50px; margin-right: 20px;">الفصل:</label><select id="class-num"></select></div>
+        <div class="row"><label>اليوم والتاريخ:</label><select><option>الأحد</option><option>الاثنين</option><option>الثلاثاء</option><option selected>الأربعاء</option><option>الخميس</option></select><select id="h-day"></select><select id="h-month"></select><select id="h-year"></select></div>
+        <div class="row"><label>المـادة:</label><select id="subject-list"></select><label style="min-width: 60px; margin-right: 20px;">الفترة:</label><select><option>الأولى</option><option>الثانية</option></select></div>
+        <div class="row"><label>بداية الاختبار:</label><select id="test-start-time"></select><label style="min-width: 90px; margin-right: 20px;">وقت الحضور:</label><select id="arrival-time"></select></div>
+        <div class="details-box"><strong>أسباب التأخير (يدون من قبل الطالب أو ولي أمره):</strong><textarea style="width: 100%; height: 70px; border: none; font-family: inherit; font-size: 19px; resize: none; outline: none; margin-top: 5px; background: transparent;"></textarea></div>
+        <div class="student-sig-row">توقيع الطالب: ............................................................</div>
+    </div>
+    <div style="margin-top: 15px; font-size: 18px; line-height: 1.5;"><p>تم السماح للطالب بدخول الاختبار بعد توقيعه بالعلم أنه لن يتم تمديد وقت الاختبار له، ويتحمل مسؤولية تأخره.</p></div>
+    <div class="footer-sigs">
+        <div class="sig-item"><span>مراقب اللجنة</span><input type="text"></div>
+        <div class="sig-item"><span>رئيس لجنة الاختبارات</span><input type="text"></div>
+        <div class="sig-item"><span>مدير المدرسة</span><input type="text"></div>
+    </div>
+</div>
+<script>
+    function toAr(num) {
+        const id = ['٠','١','٢','٣','٤','٥','٦','٧','٨','٩'];
+        return num.toString().replace(/[0-9]/g, w => id[+w]);
+    }
+    const dSel = document.getElementById('h-day'); for(let i=1; i<=30; i++) dSel.innerHTML += `<option>${toAr(i)}</option>`;
+    const hijriMonths = ["محرم", "صفر", "ربيع الأول", "ربيع الآخر", "جمادى الأولى", "جمادى الآخرة", "رجب", "شعبان", "رمضان", "شوال", "ذو القعدة", "ذو الحجة"];
+    const mSel = document.getElementById('h-month'); hijriMonths.forEach(m => mSel.innerHTML += `<option>${m}</option>`);
+    const ySel = document.getElementById('h-year'); for(let i=1447; i<=1455; i++) ySel.innerHTML += `<option>${toAr(i)}هـ</option>`;
+    const cSel = document.getElementById('class-num'); for(let i=1; i<=6; i++) cSel.innerHTML += `<option>${toAr(i)}</option>`;
+    const subjects = ["القرآن الكريم", "الدراسات الإسلامية", "اللغة العربية", "الرياضيات", "العلوم", "اللغة الإنجليزية", "الدراسات الاجتماعية", "المهارات الرقمية", "التفكير الناقد"];
+    const sSel = document.getElementById('subject-list'); subjects.forEach(s => sSel.innerHTML += `<option>${s}</option>`);
+    
+    const timeStart = document.getElementById('test-start-time'); ["٠٧:٠٠", "٠٨:٠٠", "٠٩:٠٠"].forEach(t => timeStart.innerHTML += `<option>${t} ص</option>`);
+    
+    const arrivalSel = document.getElementById('arrival-time');
+    for(let h=7; h<=10; h++) {
+        for(let m=0; m<60; m+=5) {
+            let timeStr = toAr(h.toString().padStart(2, '0')) + ":" + toAr(m.toString().padStart(2, '0'));
+            arrivalSel.innerHTML += `<option>${timeStr} ص</option>`;
+        }
+    }
+</script>
+</body>
+</html>
