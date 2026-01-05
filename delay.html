@@ -36,11 +36,15 @@
         select { border: 1px solid #ccc; background: #f9f9f9; font-family: inherit; font-size: 18px; padding: 2px; cursor: pointer; }
         .details-box { border: 1px solid #000; padding: 10px; margin-top: 15px; min-height: 100px; }
         .student-sig-row { margin-top: 20px; text-align: left; padding-left: 50px; font-weight: bold; }
-        .footer-sigs { display: flex; justify-content: space-around; margin-top: 30px; text-align: center; }
-        .sig-item { width: 30%; font-weight: bold; font-size: 18px; display: flex; flex-direction: column; gap: 10px; }
-        .sig-item input { text-align: center; font-weight: bold; border: none; border-bottom: 1px solid #000; width: 90%; margin: 0 auto; background: transparent; }
+        
+        /* تنسيق أربعة تواقيع في صف واحد */
+        .footer-sigs { display: flex; justify-content: space-between; margin-top: 30px; text-align: center; gap: 5px; }
+        .sig-item { width: 24%; font-weight: bold; font-size: 17px; display: flex; flex-direction: column; gap: 10px; }
+        .sig-item input { text-align: center; font-weight: bold; border: none; border-bottom: 1px solid #000; width: 95%; margin: 0 auto; background: transparent; }
+        
         .toolbar { width: 210mm; margin: 0 auto 10px auto; display: flex; justify-content: flex-end; }
         .print-btn { padding: 10px 25px; background: #27ae60; color: white; border: none; border-radius: 5px; cursor: pointer; font-weight: bold; }
+        
         @media print {
             .toolbar { display: none; }
             body { background: white; padding: 0; margin: 0; }
@@ -72,32 +76,51 @@
         <div class="student-sig-row">توقيع الطالب: ............................................................</div>
     </div>
     <div style="margin-top: 15px; font-size: 18px; line-height: 1.5;"><p>تم السماح للطالب بدخول الاختبار بعد توقيعه بالعلم أنه لن يتم تمديد وقت الاختبار له، ويتحمل مسؤولية تأخره.</p></div>
+    
     <div class="footer-sigs">
         <div class="sig-item"><span>مراقب اللجنة</span><input type="text"></div>
         <div class="sig-item"><span>رئيس لجنة الاختبارات</span><input type="text"></div>
+        <div class="sig-item"><span>المشرف الأكاديمي</span><input type="text"></div>
         <div class="sig-item"><span>مدير المدرسة</span><input type="text"></div>
     </div>
 </div>
+
 <script>
     function toAr(num) {
         const id = ['٠','١','٢','٣','٤','٥','٦','٧','٨','٩'];
         return num.toString().replace(/[0-9]/g, w => id[+w]);
     }
+
+    // تعبئة البيانات الأساسية
     const dSel = document.getElementById('h-day'); for(let i=1; i<=30; i++) dSel.innerHTML += `<option>${toAr(i)}</option>`;
     const hijriMonths = ["محرم", "صفر", "ربيع الأول", "ربيع الآخر", "جمادى الأولى", "جمادى الآخرة", "رجب", "شعبان", "رمضان", "شوال", "ذو القعدة", "ذو الحجة"];
     const mSel = document.getElementById('h-month'); hijriMonths.forEach(m => mSel.innerHTML += `<option>${m}</option>`);
     const ySel = document.getElementById('h-year'); for(let i=1447; i<=1455; i++) ySel.innerHTML += `<option>${toAr(i)}هـ</option>`;
     const cSel = document.getElementById('class-num'); for(let i=1; i<=6; i++) cSel.innerHTML += `<option>${toAr(i)}</option>`;
+    
     const subjects = ["القرآن الكريم", "الدراسات الإسلامية", "اللغة العربية", "الرياضيات", "العلوم", "اللغة الإنجليزية", "الدراسات الاجتماعية", "المهارات الرقمية", "التفكير الناقد"];
     const sSel = document.getElementById('subject-list'); subjects.forEach(s => sSel.innerHTML += `<option>${s}</option>`);
-    
-    const timeStart = document.getElementById('test-start-time'); ["٠٧:٠٠", "٠٨:٠٠", "٠٩:٠٠"].forEach(t => timeStart.innerHTML += `<option>${t} ص</option>`);
-    
+
+    // توليد الأوقات من 7 صباحاً إلى 2 مساءً
+    const timeStart = document.getElementById('test-start-time');
     const arrivalSel = document.getElementById('arrival-time');
-    for(let h=7; h<=10; h++) {
+
+    for(let h=7; h<=14; h++) {
+        let hourDisp = h > 12 ? h - 12 : h;
+        let period = h >= 12 ? "مساءً" : "صباحاً";
+        
+        // وقت الاختبار (كل ساعة ونصف كخيارات سريعة)
+        if (h <= 14) {
+            let tStr = toAr(hourDisp.toString().padStart(2, '0')) + ":٠٠ " + period;
+            timeStart.innerHTML += `<option>${tStr}</option>`;
+        }
+
+        // وقت الحضور (كل 5 دقائق)
         for(let m=0; m<60; m+=5) {
-            let timeStr = toAr(h.toString().padStart(2, '0')) + ":" + toAr(m.toString().padStart(2, '0'));
-            arrivalSel.innerHTML += `<option>${timeStr} ص</option>`;
+            if (h === 14 && m > 0) break; // التوقف عند الساعة 2 تماماً
+            let mStr = toAr(m.toString().padStart(2, '0'));
+            let hStr = toAr(hourDisp.toString().padStart(2, '0'));
+            arrivalSel.innerHTML += `<option>${hStr}:${mStr} ${period}</option>`;
         }
     }
 </script>
