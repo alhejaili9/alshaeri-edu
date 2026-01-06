@@ -6,13 +6,10 @@
     <title>كشف رصد الدرجات - مدارس العقيق</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <style>
-        /* ضبط إعدادات الصفحة لتحريك المحتوى لأسفل في كل الصفحات وإخفاء بيانات الهوامش */
+        /* إعدادات تصفير الهوامش لمنع ظهور بيانات المتصفح */
         @page { 
             size: A4; 
-            margin-top: 15mm; /* مسافة لتبتعد عن الحافة العلوية في كل الصفحات */
-            margin-bottom: 10mm;
-            margin-left: 0;
-            margin-right: 0;
+            margin: 0; 
         }
         
         body { font-family: 'Traditional Arabic', serif; background-color: #e0e0e0; margin: 0; padding: 20px 0; -webkit-print-color-adjust: exact; font-size: 18px; }
@@ -44,11 +41,14 @@
         
         .student-name-input { text-align: right; padding-right: 5px; width: 95%; border: none; font-family: inherit; font-size: 18px; background: transparent; }
         
-        .toolbar { width: 210mm; margin: 0 auto 10px auto; display: flex; gap: 5px; flex-wrap: wrap; justify-content: center; }
+        .toolbar { width: 210mm; margin: 0 auto 10px auto; display: flex; gap: 5px; flex-wrap: wrap; justify-content: center; align-items: center; }
         .btn { padding: 6px 12px; border: none; border-radius: 4px; cursor: pointer; font-weight: bold; color: white; font-family: 'Tajawal'; font-size: 13px; }
         .btn-print { background: #27ae60; }
         .btn-excel { background: #2c3e50; }
         .btn-sort { background: #8e44ad; }
+
+        /* ستايل خيار إظهار/إخفاء الفصل */
+        .toggle-label { font-size: 13px; font-weight: bold; cursor: pointer; display: flex; align-items: center; gap: 5px; background: #fff; padding: 4px 8px; border-radius: 4px; border: 1px solid #ccc; }
         
         .footer-sigs { 
             margin-top: 30px; 
@@ -72,15 +72,18 @@
         
         @media print { 
             .toolbar, .btn-remove { display: none !important; } 
-            body { background: white; padding: 0; } 
+            body { 
+                background: white; 
+                padding: 15mm 0 0 0; /* مسافة علوية بديلة للهوامش */
+            } 
             .container { 
                 box-shadow: none; 
-                margin: 0; 
+                margin: 0 auto; 
                 width: 100%; 
                 min-height: auto; 
-                border: none !important; /* إزالة الإطار عند الطباعة */
+                border: none !important; 
                 outline: none !important;
-                padding: 0 15mm; /* ترك المسافة العلوية لـ @page لضمان عملها في كل الصفحات */
+                padding: 0 15mm;
             }
             thead { display: table-header-group; } 
             tr { page-break-inside: avoid; } 
@@ -100,6 +103,9 @@
     <button class="btn btn-sort" onclick="sortGrades('desc')">الأعلى درجة</button>
     <button class="btn btn-sort" onclick="sortGrades('asc')">الأقل درجة</button>
     <button class="btn btn-print" style="background:#2980b9" onclick="addRow()">➕ إضافة يدوي</button>
+    <label class="toggle-label">
+        <input type="checkbox" checked onchange="document.getElementById('class-item').style.display = this.checked ? 'flex' : 'none'"> إظهار الفصل
+    </label>
 </div>
 
 <div class="container">
@@ -114,7 +120,7 @@
     <div class="info-grid">
         <div class="info-item">المادة: <select id="subject-list"></select></div>
         <div class="info-item">الصف: <select><option>أول متوسط</option><option>ثاني متوسط</option><option>ثالث متوسط</option><option>أول ثانوي</option><option>ثاني ثانوي</option><option>ثالث ثانوي</option></select></div>
-        <div class="info-item">الفصل: <select id="class-num"></select></div>
+        <div class="info-item" id="class-item">الفصل: <select id="class-num"></select></div>
         <div class="info-item">التاريخ: <select id="h-day"></select> <select id="h-month"></select> <select id="h-year"></select></div>
         <div class="info-item">الدرجة العظمى: <select id="max-grade-list"></select></div>
         <div class="info-item">نوع الرصد: <select id="type-list" onchange="checkType(this)"><option>اختبار فتري</option><option>عملي</option><option selected>نظري نهائي</option><option>مقالي نهائي</option><option value="custom">إدخال يدوي...</option></select> <input type="text" id="custom-type" style="display:none; width:100px; margin-right:5px;" placeholder="اكتب النوع"></div>
@@ -124,8 +130,7 @@
             <tr>
                 <th style="width: 40px;">م</th>
                 <th>اسم الطالب</th>
-                <th style="width: 90px;">الدرجة</th>
-                <th>ملاحظات</th>
+                <th style="width: 120px;">الدرجة</th>
                 <th class="btn-remove" style="width: 40px;">حذف</th>
             </tr>
         </thead>
@@ -175,7 +180,6 @@
             <td class="row-index"></td>
             <td><input type="text" class="student-name-input" value="${name}"></td>
             <td><input type="text" class="student-score" style="width:100%; text-align:center; border:none; background:transparent;" value="${score}"></td>
-            <td><input type="text" style="width:100%; border:none; background:transparent;"></td>
             <td class="btn-remove"><button onclick="this.parentElement.parentElement.remove(); reIndex();" style="color:red; border:none; background:none; cursor:pointer;">X</button></td>
         `;
         tbody.appendChild(row);
