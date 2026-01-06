@@ -38,7 +38,12 @@
         .student-sig-row { margin-top: 20px; text-align: left; padding-left: 50px; font-weight: bold; }
         .footer-sigs { display: flex; justify-content: space-between; margin-top: 30px; text-align: center; gap: 5px; }
         .sig-item { width: 24%; font-weight: bold; font-size: 17px; display: flex; flex-direction: column; gap: 10px; }
-        .sig-item input { text-align: center; font-weight: bold; border: none; border-bottom: 1px solid #000; width: 95%; margin: 0 auto; background: transparent; }
+        
+        /* تعديل هنا لتمكين تعديل المسميات والأسماء */
+        .sig-item input { text-align: center; font-weight: bold; border: none; width: 95%; margin: 0 auto; background: transparent; font-family: inherit; }
+        .sig-name { border-bottom: 1px solid #000 !important; }
+        .sig-title { font-size: 18px; margin-bottom: 5px; }
+
         .toolbar { width: 210mm; margin: 0 auto 10px auto; display: flex; justify-content: flex-end; }
         .print-btn { padding: 10px 25px; background: #27ae60; color: white; border: none; border-radius: 5px; cursor: pointer; font-weight: bold; }
         @media print {
@@ -46,6 +51,7 @@
             body { background: white; padding: 0; margin: 0; }
             .container { box-shadow: none; border: 6px double #000; }
             input, select, textarea { border: none !important; -webkit-appearance: none; appearance: none; }
+            .sig-name { border-bottom: 1px solid #000 !important; } /* الحفاظ على الخط السفلي عند الطباعة */
         }
     </style>
 </head>
@@ -72,11 +78,24 @@
         <div class="student-sig-row">توقيع الطالب: ............................................................</div>
     </div>
     <div style="margin-top: 15px; font-size: 18px; line-height: 1.5;"><p>تم السماح للطالب بدخول الاختبار بعد توقيعه بالعلم أنه لن يتم تمديد وقت الاختبار له، ويتحمل مسؤولية تأخره.</p></div>
+    
     <div class="footer-sigs">
-        <div class="sig-item"><span>مراقب اللجنة</span><input type="text"></div>
-        <div class="sig-item"><span>رئيس لجنة الاختبارات</span><input type="text"></div>
-        <div class="sig-item"><span>المشرف الأكاديمي</span><input type="text"></div>
-        <div class="sig-item"><span>مدير المدرسة</span><input type="text"></div>
+        <div class="sig-item">
+            <input type="text" class="sig-title" value="مراقب اللجنة">
+            <input type="text" class="sig-name" placeholder="الاسم">
+        </div>
+        <div class="sig-item">
+            <input type="text" class="sig-title" value="رئيس لجنة الاختبارات">
+            <input type="text" class="sig-name" placeholder="الاسم">
+        </div>
+        <div class="sig-item">
+            <input type="text" class="sig-title" value="المشرف الأكاديمي">
+            <input type="text" class="sig-name" placeholder="الاسم">
+        </div>
+        <div class="sig-item">
+            <input type="text" class="sig-title" value="مدير المدرسة">
+            <input type="text" class="sig-name" placeholder="الاسم">
+        </div>
     </div>
 </div>
 <script>
@@ -105,7 +124,6 @@
             let hStr = toAr(hourDisp.toString().padStart(2, '0'));
             let finalTimeStr = `${hStr}:${mStr} ${period}`;
             
-            // تعبئة كلتا القائمتين بمرونة 5 دقائق
             timeStart.innerHTML += `<option>${finalTimeStr}</option>`;
             arrivalSel.innerHTML += `<option>${finalTimeStr}</option>`;
         }
