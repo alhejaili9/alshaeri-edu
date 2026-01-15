@@ -142,7 +142,7 @@
         @media print {
             @page { margin: 0; size: A4 portrait; }
             body { margin: 0; padding: 0; background: none !important; }
-            .sidebar, .btn-del, .toggle-btn, .user-credit { display: none !important; }
+            .sidebar, .btn-del, .toggle-btn, .user-credit, .img-control-btn, .img-controls { display: none !important; }
             .paper { 
                 margin: 0 !important; 
                 border: 4px double #000 !important; 
@@ -333,13 +333,16 @@
 
     function addNewQuestion() {
         const container = document.getElementById('qc' + currentPage);
-        const currentPaper = document.getElementById('page' + currentPage);
         
         qCount++; 
         const id = 'q' + qCount;
         const html = `<table class="questions-table" id="${id}">
             <tr><td rowspan="2" class="q-num">${toArabic(qCount)}</td>
-            <td colspan="8" class="q-head"><div id="${id}-text" contenteditable="true">اكتب السؤال هنا...</div></td>
+            <td colspan="8" class="q-head">
+                <div id="${id}-text" contenteditable="true">اكتب السؤال هنا...</div>
+                <button class="img-control-btn" onclick="triggerImageUpload('${id}')" style="margin-top:5px; background:#e67e22;">📷 إضافة صورة</button>
+                <input type="file" id="${id}-imgInput" accept="image/*" style="display:none;" onchange="handleImageUpload(event, '${id}')">
+            </td>
             <td rowspan="2" style="width:30px; border:none; text-align:center;"><button class="btn-del" onclick="removeQuestion('${id}')">✖</button></td></tr>
             <tr><td class="opt-char">أ</td><td class="opt-val" contenteditable="true"></td><td class="opt-char">ب</td><td class="opt-val" contenteditable="true"></td><td class="opt-char">ج</td><td class="opt-val" contenteditable="true"></td><td class="opt-char">د</td><td class="opt-val" contenteditable="true"></td></tr></table>`;
         container.insertAdjacentHTML('beforeend', html);
@@ -430,43 +433,31 @@
         }
     }
 
-    // وظائف الصور - مبسطة
-    function addImageToQuestion() {
-        if (!lastFocusedQuestionId) {
-            alert('⚠️ الرجاء الضغط على السؤال أولاً ثم اضغط زر الصورة');
-            return;
-        }
-        document.getElementById('hiddenImgInput').click();
+    // وظائف الصور - جديدة ومبسطة
+    function triggerImageUpload(qId) {
+        document.getElementById(qId + '-imgInput').click();
     }
 
-    function processImage(event) {
+    function handleImageUpload(event, qId) {
         const file = event.target.files[0];
         if (!file) return;
         
-        if (!lastFocusedQuestionId) {
-            alert('⚠️ لم يتم تحديد سؤال');
-            return;
-        }
-        
         const reader = new FileReader();
         reader.onload = function(e) {
-            const qText = document.getElementById(`${lastFocusedQuestionId}-text`);
-            if (!qText) {
-                alert('⚠️ خطأ: لم يتم العثور على السؤال');
-                return;
-            }
-            
+            const qText = document.getElementById(qId + '-text');
             const imgId = 'img_' + Date.now();
+            
             const imgContainer = document.createElement('div');
-            imgContainer.style.cssText = 'margin: 10px 0; text-align: center; border: 2px dashed #ccc; padding: 10px;';
+            imgContainer.style.cssText = 'margin: 10px 0; padding: 10px; border: 2px dashed #3498db; border-radius: 5px; background: #f8f9fa;';
             imgContainer.innerHTML = `
-                <img id="${imgId}" src="${e.target.result}" style="width: 200px; max-width: 100%; display: block; margin: 0 auto 10px;">
+                <img id="${imgId}" src="${e.target.result}" style="width: 200px; max-width: 100%; display: block; margin: 0 auto 10px; border-radius: 5px;">
                 <div style="display: flex; gap: 5px; justify-content: center; flex-wrap: wrap;">
-                    <button class="img-control-btn" onclick="document.getElementById('${imgId}').style.width='50px'">٥٠ بكسل</button>
-                    <button class="img-control-btn" onclick="document.getElementById('${imgId}').style.width='100px'">١٠٠ بكسل</button>
-                    <button class="img-control-btn" onclick="document.getElementById('${imgId}').style.width='200px'">٢٠٠ بكسل</button>
-                    <button class="img-control-btn" onclick="document.getElementById('${imgId}').style.width='300px'">٣٠٠ بكسل</button>
-                    <button class="img-control-btn" onclick="document.getElementById('${imgId}').style.width='400px'">٤٠٠ بكسل</button>
+                    <button class="img-control-btn" onclick="document.getElementById('${imgId}').style.width='80px'">صغير جداً</button>
+                    <button class="img-control-btn" onclick="document.getElementById('${imgId}').style.width='150px'">صغير</button>
+                    <button class="img-control-btn" onclick="document.getElementById('${imgId}').style.width='250px'">متوسط</button>
+                    <button class="img-control-btn" onclick="document.getElementById('${imgId}').style.width='350px'">كبير</button>
+                    <button class="img-control-btn" onclick="document.getElementById('${imgId}').style.width='450px'">كبير جداً</button>
+                    <br>
                     <button class="img-control-btn" onclick="this.parentElement.parentElement.style.textAlign='right'">➡️ يمين</button>
                     <button class="img-control-btn" onclick="this.parentElement.parentElement.style.textAlign='center'">⬇️ وسط</button>
                     <button class="img-control-btn" onclick="this.parentElement.parentElement.style.textAlign='left'">⬅️ يسار</button>
@@ -477,6 +468,11 @@
         };
         reader.readAsDataURL(file);
         event.target.value = '';
+    }
+
+    // إزالة الوظيفة القديمة
+    function addImageToQuestion() {
+        alert('⚠️ استخدم زر "📷 إضافة صورة" الموجود داخل كل سؤال');
     }
 </script>
 </body>
