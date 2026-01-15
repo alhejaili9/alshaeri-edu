@@ -496,21 +496,16 @@
         
         qCount++; 
         const id = 'q' + qCount;
-        const html = `<table class="questions-table" id="${id}" style="margin-bottom: 10px;">
+        const html = `<table class="questions-table" id="${id}" style="margin-bottom: 10px; width: 100%;">
             <tr>
-                <td rowspan="2" class="q-num" style="width: 35px;">${toArabic(qCount)}</td>
-                <td colspan="4" class="q-head" style="text-align: right; padding: 10px;">
+                <td class="q-num" style="width: 35px; text-align: center; border: 1px solid #000;">${toArabic(qCount)}</td>
+                <td style="width: auto; text-align: right; padding: 10px; border: 1px solid #000;">
                     <div contenteditable="true">اكتب السؤال هنا...</div>
                 </td>
-                <td rowspan="2" style="width:30px; border:none; text-align:center;">
+                <td style="width: 80px; border: 1px solid #000; text-align: center;"></td>
+                <td style="width:30px; border:none; text-align:center;">
                     <button class="btn-del" onclick="if(confirm('حذف هذا السؤال؟')) { document.getElementById('${id}').remove(); reorderAllQuestions(); }" title="حذف السؤال">✖</button>
                 </td>
-            </tr>
-            <tr>
-                <td style="width: 20%; text-align: center; font-weight: bold; background: #f2f2f2; border: 1px solid #000;">صح</td>
-                <td style="width: 30%; border: 1px solid #000;"></td>
-                <td style="width: 20%; text-align: center; font-weight: bold; background: #f2f2f2; border: 1px solid #000;">خطأ</td>
-                <td style="width: 30%; border: 1px solid #000;"></td>
             </tr>
         </table>`;
         container.insertAdjacentHTML('beforeend', html);
