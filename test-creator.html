@@ -89,10 +89,55 @@
         .user-credit { margin-top: 10px; padding-top: 10px; border-top: 1px solid #eee; text-align: center; font-size: 13px; color: #2c3e50; font-weight: bold; }
 
         .modal { display: none; position: fixed; z-index: 2000; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); }
-        .modal-content { background: #fff; margin: 5% auto; padding: 20px; width: 90%; max-width: 700px; border-radius: 10px; direction: rtl; }
-        .math-btn { padding: 8px; font-size: 20px; cursor: pointer; background:#fff; border:2px solid #8e44ad; border-radius: 8px; color: #8e44ad; font-weight: bold; margin: 4px; min-width: 45px; }
+        .modal-content { background: #fff; margin: 5% auto; padding: 20px; width: 90%; max-width: 700px; border-radius: 10px; direction: rtl; max-height: 80vh; overflow-y: auto; }
+        .math-btn { 
+            padding: 8px 12px; 
+            font-size: 14px; 
+            cursor: pointer; 
+            background:#fff; 
+            border:2px solid #8e44ad; 
+            border-radius: 8px; 
+            color: #8e44ad; 
+            font-weight: bold; 
+            min-width: 80px;
+            transition: 0.2s;
+        }
+        .math-btn:hover {
+            background: #8e44ad;
+            color: white;
+        }
         #math-preview { border: 2px solid #8e44ad; padding: 15px; min-height: 80px; margin: 10px 0; background:#fcfaff; text-align: center; font-size: 24px; }
         #math-input { width: 100%; height: 80px; direction: ltr; padding: 10px; border: 1px solid #ccc; }
+
+        /* تصميم الصور داخل الأسئلة */
+        .question-img {
+            max-width: 100%;
+            height: auto;
+            margin: 10px 0;
+            border: 2px dashed #ccc;
+            cursor: move;
+            display: block;
+        }
+        .img-controls {
+            display: flex;
+            gap: 5px;
+            margin: 5px 0;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+        .img-control-btn {
+            padding: 5px 10px;
+            background: #3498db;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 11px;
+            font-family: 'Tajawal';
+        }
+        .img-control-btn:hover {
+            background: #2980b9;
+        }
 
         @media print {
             @page { margin: 0; size: A4 portrait; }
@@ -138,6 +183,7 @@
     <button class="action-btn btn-add" onclick="addNewQuestion()">➕ إضافة سؤال جديد</button>
     <button class="action-btn btn-page" onclick="addNewPage()">📄 إضافة صفحة جديدة</button>
     <button class="action-btn btn-math" onclick="openMathModal()">➕ رموز رياضية</button>
+    <button class="action-btn btn-add" onclick="addImageToQuestion()" style="background: #e67e22;">🖼️ إضافة صورة للسؤال</button>
     <button class="action-btn btn-print" onclick="window.print()">🖨️ طباعة الاختبار</button>
     
     <div class="user-credit">إعداد أ/ عبدالرحمن سعد الحجيلي</div>
@@ -146,16 +192,52 @@
 <div id="mathModal" class="modal">
     <div class="modal-content">
         <h3 style="text-align: center; color: #8e44ad;">محرر المعادلات الرياضية</h3>
-        <div style="direction: ltr; display: flex; flex-wrap: wrap; justify-content: center;">
-            <button class="math-btn" onclick="insertMath('\\frac{}{}')">a/b</button>
-            <button class="math-btn" onclick="insertMath('\\sqrt{}')">√</button>
-            <button class="math-btn" onclick="insertMath('^{}')">س²</button>
+        <div style="display: flex; flex-wrap: wrap; justify-content: flex-start; gap: 5px; direction: rtl;">
+            <button class="math-btn" onclick="insertMath('\\frac{}{}')">كسر</button>
+            <button class="math-btn" onclick="insertMath('\\sqrt{}')">جذر</button>
+            <button class="math-btn" onclick="insertMath('\\sqrt[3]{}')">جذر تكعيبي</button>
+            <button class="math-btn" onclick="insertMath('^{}')">أس</button>
+            <button class="math-btn" onclick="insertMath('_{}')">منخفض</button>
             <button class="math-btn" onclick="insertMath('\\times')">×</button>
-            <button class="math-btn" onclick="insertMath('\\angle')">∠</button>
-            <button class="math-btn" onclick="insertMath('\\triangle')">△</button>
-            <button class="math-btn" onclick="insertMath('\\pi')"> ط </button>
+            <button class="math-btn" onclick="insertMath('\\div')">÷</button>
+            <button class="math-btn" onclick="insertMath('\\pm')">±</button>
+            <button class="math-btn" onclick="insertMath('\\mp')">∓</button>
+            <button class="math-btn" onclick="insertMath('=')">يساوي</button>
+            <button class="math-btn" onclick="insertMath('\\neq')">لا يساوي</button>
+            <button class="math-btn" onclick="insertMath('\\approx')">تقريباً</button>
+            <button class="math-btn" onclick="insertMath('\\leq')">≤</button>
+            <button class="math-btn" onclick="insertMath('\\geq')">≥</button>
+            <button class="math-btn" onclick="insertMath('<')">أصغر من</button>
+            <button class="math-btn" onclick="insertMath('>')">أكبر من</button>
+            <button class="math-btn" onclick="insertMath('\\angle')">زاوية</button>
+            <button class="math-btn" onclick="insertMath('\\triangle')">مثلث</button>
+            <button class="math-btn" onclick="insertMath('\\square')">مربع</button>
+            <button class="math-btn" onclick="insertMath('\\parallel')">توازي</button>
+            <button class="math-btn" onclick="insertMath('\\perp')">تعامد</button>
+            <button class="math-btn" onclick="insertMath('\\cong')">تطابق</button>
+            <button class="math-btn" onclick="insertMath('\\sim')">تشابه</button>
+            <button class="math-btn" onclick="insertMath('\\pi')">ط (باي)</button>
+            <button class="math-btn" onclick="insertMath('\\theta')">θ</button>
+            <button class="math-btn" onclick="insertMath('\\alpha')">α</button>
+            <button class="math-btn" onclick="insertMath('\\beta')">β</button>
+            <button class="math-btn" onclick="insertMath('\\sum')">مجموع</button>
+            <button class="math-btn" onclick="insertMath('\\int')">تكامل</button>
+            <button class="math-btn" onclick="insertMath('\\infty')">∞</button>
+            <button class="math-btn" onclick="insertMath('\\rightarrow')">→</button>
+            <button class="math-btn" onclick="insertMath('\\leftarrow')">←</button>
+            <button class="math-btn" onclick="insertMath('\\Rightarrow')">⇒</button>
+            <button class="math-btn" onclick="insertMath('\\Leftarrow')">⇐</button>
+            <button class="math-btn" onclick="insertMath('\\left( \\right)')">أقواس</button>
+            <button class="math-btn" onclick="insertMath('\\left[ \\right]')">أقواس مربعة</button>
+            <button class="math-btn" onclick="insertMath('\\left\\{ \\right\\}')">أقواس معقوفة</button>
+            <button class="math-btn" onclick="insertMath('\\%')">%</button>
+            <button class="math-btn" onclick="insertMath('\\circ')">°</button>
+            <button class="math-btn" onclick="insertMath('\\cdot')">·</button>
+            <button class="math-btn" onclick="insertMath('\\ldots')">...</button>
+            <button class="math-btn" onclick="insertMath('\\overline{}')">خط علوي</button>
+            <button class="math-btn" onclick="insertMath('\\underline{}')">خط سفلي</button>
         </div>
-        <textarea id="math-input" placeholder="اكتب الكود هنا..." oninput="updateMathPreview()"></textarea>
+        <textarea id="math-input" placeholder="اكتب الكود هنا..." oninput="updateMathPreview()" style="direction: ltr;"></textarea>
         <div id="math-preview"></div>
         <div style="display: flex; gap: 10px; justify-content: center;">
             <button onclick="closeMathModal()" style="background:#e74c3c; width: 100px; color:white; border:none; border-radius:5px; cursor:pointer; padding:10px;">إلغاء</button>
@@ -248,7 +330,7 @@
         const id = 'q' + qCount;
         const html = `<table class="questions-table" id="${id}">
             <tr><td rowspan="2" class="q-num">${toArabic(qCount)}</td>
-            <td colspan="8" class="q-head"><div id="${id}-text" contenteditable="true" onfocus="lastFocusedQuestionId='${id}'">اكتب السؤال هنا...</div></td>
+            <td colspan="8" class="q-head"><div id="${id}-text" contenteditable="true" onfocus="setLastFocusedQuestion('${id}')">اكتب السؤال هنا...</div></td>
             <td rowspan="2" style="width:30px; border:none; text-align:center;"><button class="btn-del" onclick="removeQuestion('${id}')">✖</button></td></tr>
             <tr><td class="opt-char">أ</td><td class="opt-val" contenteditable="true"></td><td class="opt-char">ب</td><td class="opt-val" contenteditable="true"></td><td class="opt-char">ج</td><td class="opt-val" contenteditable="true"></td><td class="opt-char">د</td><td class="opt-val" contenteditable="true"></td></tr></table>`;
         container.insertAdjacentHTML('beforeend', html);
@@ -337,6 +419,92 @@
             qText.innerHTML += ` \\(${document.getElementById('math-input').value}\\) `;
             MathJax.typesetPromise([qText]); 
             closeMathModal();
+        }
+    }
+
+    // وظيفة تحديد السؤال الحالي
+    function setLastFocusedQuestion(qId) {
+        lastFocusedQuestionId = qId;
+        console.log('تم تحديد السؤال:', qId);
+    }
+
+    // وظائف الصور
+    function addImageToQuestion() {
+        console.log('زر الصورة تم الضغط عليه');
+        console.log('السؤال الحالي:', lastFocusedQuestionId);
+        
+        if (!lastFocusedQuestionId) {
+            alert('الرجاء النقر على السؤال المراد إضافة صورة له أولاً');
+            return;
+        }
+        
+        const fileInput = document.getElementById('hiddenImgInput');
+        console.log('محاولة فتح محدد الملفات');
+        fileInput.click();
+    }
+
+    function processImage(event) {
+        console.log('تم اختيار ملف');
+        const file = event.target.files[0];
+        if (!file) {
+            console.log('لا يوجد ملف');
+            return;
+        }
+        
+        console.log('نوع الملف:', file.type);
+        console.log('حجم الملف:', file.size);
+        
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            console.log('تم قراءة الملف بنجاح');
+            if (lastFocusedQuestionId) {
+                const qText = document.getElementById(`${lastFocusedQuestionId}-text`);
+                if (!qText) {
+                    console.log('لم يتم العثور على السؤال');
+                    return;
+                }
+                
+                const imgId = 'img_' + Date.now();
+                const imgHtml = `
+                    <div style="margin: 10px 0; text-align: center;">
+                        <img id="${imgId}" src="${e.target.result}" class="question-img" style="width: 200px;">
+                        <div class="img-controls">
+                            <button class="img-control-btn" onclick="resizeImage('${imgId}', 50)">صغير جداً</button>
+                            <button class="img-control-btn" onclick="resizeImage('${imgId}', 100)">صغير</button>
+                            <button class="img-control-btn" onclick="resizeImage('${imgId}', 200)">متوسط</button>
+                            <button class="img-control-btn" onclick="resizeImage('${imgId}', 300)">كبير</button>
+                            <button class="img-control-btn" onclick="resizeImage('${imgId}', 400)">كبير جداً</button>
+                            <button class="img-control-btn" onclick="alignImage('${imgId}', 'right')">يمين</button>
+                            <button class="img-control-btn" onclick="alignImage('${imgId}', 'center')">وسط</button>
+                            <button class="img-control-btn" onclick="alignImage('${imgId}', 'left')">يسار</button>
+                            <button class="img-control-btn" style="background:#e74c3c;" onclick="removeImage('${imgId}')">🗑️ حذف</button>
+                        </div>
+                    </div>
+                `;
+                qText.innerHTML += imgHtml;
+                console.log('تم إضافة الصورة للسؤال');
+            }
+        };
+        reader.readAsDataURL(file);
+        event.target.value = '';
+    }
+
+    function resizeImage(imgId, width) {
+        const img = document.getElementById(imgId);
+        if (img) img.style.width = width + 'px';
+    }
+
+    function alignImage(imgId, alignment) {
+        const container = document.getElementById(imgId).parentElement;
+        if (alignment === 'right') container.style.textAlign = 'right';
+        else if (alignment === 'center') container.style.textAlign = 'center';
+        else if (alignment === 'left') container.style.textAlign = 'left';
+    }
+
+    function removeImage(imgId) {
+        const img = document.getElementById(imgId);
+        if (img && confirm('هل تريد حذف هذه الصورة؟')) {
+            img.parentElement.remove();
         }
     }
 </script>
