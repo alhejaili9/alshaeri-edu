@@ -271,6 +271,18 @@
     <button class="action-btn btn-math" onclick="openMathModal()">➕ رموز رياضية</button>
     <button class="action-btn btn-print" onclick="window.print()">🖨️ طباعة الاختبار</button>
     
+    <div style="margin-top: 15px; padding: 10px; background: #e8f4f8; border-radius: 8px; font-size: 11px; border: 2px solid #3498db;">
+        <div style="font-weight: bold; margin-bottom: 8px; color: #2c3e50; text-align: center;">📌 تعليمات الاستخدام</div>
+        <ul style="margin: 0; padding-right: 15px; line-height: 1.6;">
+            <li><strong>إضافة صورة:</strong> اضغط زر 📷 بجانب السؤال</li>
+            <li><strong>تكبير/تصغير الصورة:</strong> اسحب الدائرة الزرقاء</li>
+            <li><strong>نقل الصورة:</strong> اسحب الصورة بالماوس</li>
+            <li><strong>الكتابة في أي مكان:</strong> دبل كليك في المساحة الفارغة</li>
+            <li><strong>نقل مربع النص:</strong> اسحبه بالماوس</li>
+            <li><strong>حذف مربع نص:</strong> Ctrl + Delete</li>
+        </ul>
+    </div>
+    
     <div class="user-credit">إعداد أ/ عبدالرحمن سعد الحجيلي</div>
 </div>
 
@@ -450,19 +462,23 @@
         
         qCount++; 
         const id = 'q' + qCount;
-        const html = `<table class="questions-table" id="${id}">
-            <tr><td rowspan="2" class="q-num">${toArabic(qCount)}</td>
-            <td colspan="8" class="q-head">
-                <div id="${id}-text" contenteditable="true">اكتب السؤال المقالي هنا...</div>
-                <div style="border: 1px solid #ccc; min-height: 80px; margin-top: 10px; padding: 5px; background: #f9f9f9;">
-                    <span style="color: #999; font-size: 14px;">مساحة الإجابة</span>
+        const html = `<div id="${id}" style="margin-bottom: 15px; page-break-inside: avoid;">
+            <div style="display: flex; align-items: flex-start; gap: 10px;">
+                <div style="min-width: 35px; text-align: center; font-weight: bold; border: 1px solid #000; padding: 6px;">${toArabic(qCount)}</div>
+                <div style="flex: 1; border: 1px solid #000; padding: 10px;">
+                    <div contenteditable="true" style="margin-bottom: 10px; min-height: 25px;">اكتب السؤال المقالي هنا...</div>
+                    <div style="border-top: 1px solid #ccc; min-height: 100px; margin-top: 10px; padding-top: 10px;">
+                        <div style="color: #999; font-size: 14px; text-align: center;">مساحة الإجابة</div>
+                        <div style="margin-top: 20px; border-top: 1px dotted #ccc;"></div>
+                        <div style="margin-top: 20px; border-top: 1px dotted #ccc;"></div>
+                        <div style="margin-top: 20px; border-top: 1px dotted #ccc;"></div>
+                    </div>
                 </div>
-                <input type="file" id="${id}-imgInput" accept="image/*" style="display:none;" onchange="handleImageUpload(event, '${id}')">
-            </td>
-            <td rowspan="2" style="width:30px; border:none; text-align:center;">
-                <button class="btn-del" onclick="document.getElementById('${id}-imgInput').click()" style="background:#e67e22; margin-bottom:5px;" title="إضافة صورة">📷</button><br>
-                <button class="btn-del" onclick="if(confirm('حذف هذا السؤال؟')) { document.getElementById('${id}').remove(); reorderAllQuestions(); }" title="حذف السؤال">✖</button>
-            </td></tr></table>`;
+                <div style="width: 30px; text-align: center;">
+                    <button class="btn-del" onclick="if(confirm('حذف هذا السؤال؟')) { document.getElementById('${id}').remove(); reorderAllQuestions(); }" title="حذف السؤال">✖</button>
+                </div>
+            </div>
+        </div>`;
         container.insertAdjacentHTML('beforeend', html);
         
         setTimeout(() => {
@@ -480,17 +496,23 @@
         
         qCount++; 
         const id = 'q' + qCount;
-        const html = `<table class="questions-table" id="${id}">
-            <tr><td rowspan="2" class="q-num">${toArabic(qCount)}</td>
-            <td colspan="8" class="q-head">
-                <div id="${id}-text" contenteditable="true">اكتب السؤال هنا...</div>
-                <input type="file" id="${id}-imgInput" accept="image/*" style="display:none;" onchange="handleImageUpload(event, '${id}')">
-            </td>
-            <td rowspan="2" style="width:30px; border:none; text-align:center;">
-                <button class="btn-del" onclick="document.getElementById('${id}-imgInput').click()" style="background:#e67e22; margin-bottom:5px;" title="إضافة صورة">📷</button><br>
-                <button class="btn-del" onclick="if(confirm('حذف هذا السؤال؟')) { document.getElementById('${id}').remove(); reorderAllQuestions(); }" title="حذف السؤال">✖</button>
-            </td></tr>
-            <tr><td colspan="2" class="opt-char" style="text-align:center;">صح</td><td colspan="2" style="border: 1px solid #000; text-align:center;"></td><td colspan="2" class="opt-char" style="text-align:center;">خطأ</td><td colspan="2" style="border: 1px solid #000; text-align:center;"></td></tr></table>`;
+        const html = `<table class="questions-table" id="${id}" style="margin-bottom: 10px;">
+            <tr>
+                <td rowspan="2" class="q-num" style="width: 35px;">${toArabic(qCount)}</td>
+                <td colspan="4" class="q-head" style="text-align: right; padding: 10px;">
+                    <div contenteditable="true">اكتب السؤال هنا...</div>
+                </td>
+                <td rowspan="2" style="width:30px; border:none; text-align:center;">
+                    <button class="btn-del" onclick="if(confirm('حذف هذا السؤال؟')) { document.getElementById('${id}').remove(); reorderAllQuestions(); }" title="حذف السؤال">✖</button>
+                </td>
+            </tr>
+            <tr>
+                <td style="width: 20%; text-align: center; font-weight: bold; background: #f2f2f2; border: 1px solid #000;">صح</td>
+                <td style="width: 30%; border: 1px solid #000;"></td>
+                <td style="width: 20%; text-align: center; font-weight: bold; background: #f2f2f2; border: 1px solid #000;">خطأ</td>
+                <td style="width: 30%; border: 1px solid #000;"></td>
+            </tr>
+        </table>`;
         container.insertAdjacentHTML('beforeend', html);
         
         setTimeout(() => {
