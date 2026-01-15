@@ -24,7 +24,7 @@
             width: 210mm;
             min-height: 297mm;
             max-height: 297mm;
-            padding: 12mm 15mm;
+            padding: 12mm 12mm;
             margin-bottom: 25px;
             box-shadow: 0 0 15px rgba(0,0,0,0.5);
             position: relative;
@@ -234,7 +234,7 @@
                 width: 210mm !important; 
                 min-height: 297mm !important;
                 max-height: 297mm !important;
-                padding: 12mm 15mm !important; 
+                padding: 12mm 12mm !important; 
                 page-break-after: always !important; 
                 page-break-inside: avoid !important;
             }
@@ -281,6 +281,7 @@
             <li><strong>الكتابة في أي مكان:</strong> دبل كليك في المساحة الفارغة</li>
             <li><strong>نقل مربع النص:</strong> اسحبه بالماوس</li>
             <li><strong>حذف مربع نص:</strong> Ctrl + Delete</li>
+            <li><strong>التصدير لإكسل:</strong> يُصدّر الأسئلة مع الإجابات الصحيحة</li>
         </ul>
     </div>
     
@@ -440,8 +441,16 @@
                 <div id="${id}-text" contenteditable="true">اكتب السؤال هنا...</div>
                 <input type="file" id="${id}-imgInput" accept="image/*" style="display:none;" onchange="handleImageUpload(event, '${id}')">
             </td>
-            <td rowspan="2" style="width:30px; border:none; text-align:center;">
-                <button class="btn-del" onclick="document.getElementById('${id}-imgInput').click()" style="background:#e67e22; margin-bottom:5px;" title="إضافة صورة">📷</button><br>
+            <td rowspan="2" style="width:70px; border:none; text-align:center;">
+                <div style="margin-bottom: 3px; font-size: 9px;">الإجابة:</div>
+                <select id="${id}-answer" style="width: 50px; padding: 2px; border: 1px solid #ccc; border-radius: 3px; font-size: 11px; margin-bottom: 3px;">
+                    <option value="">--</option>
+                    <option value="أ">أ</option>
+                    <option value="ب">ب</option>
+                    <option value="ج">ج</option>
+                    <option value="د">د</option>
+                </select><br>
+                <button class="btn-del" onclick="document.getElementById('${id}-imgInput').click()" style="background:#e67e22; margin-bottom:3px;" title="إضافة صورة">📷</button><br>
                 <button class="btn-del" onclick="if(confirm('حذف هذا السؤال؟')) { document.getElementById('${id}').remove(); reorderAllQuestions(); }" title="حذف السؤال">✖</button>
             </td></tr>
             <tr><td class="opt-char">أ</td><td class="opt-val" contenteditable="true"></td><td class="opt-char">ب</td><td class="opt-val" contenteditable="true"></td><td class="opt-char">ج</td><td class="opt-val" contenteditable="true"></td><td class="opt-char">د</td><td class="opt-val" contenteditable="true"></td></tr></table>`;
@@ -459,373 +468,4 @@
     }
 
     function addEssayQuestion() {
-        const container = document.getElementById('qc' + currentPage);
-        
-        qCount++; 
-        const id = 'q' + qCount;
-        const html = `<div id="${id}" data-type="سؤال إنشائي" style="margin-bottom: 15px; page-break-inside: avoid;">
-            <div style="display: flex; align-items: flex-start; gap: 10px;">
-                <div style="min-width: 35px; text-align: center; font-weight: bold; border: 1px solid #000; padding: 6px;">${toArabic(qCount)}</div>
-                <div style="flex: 1; border: 1px solid #000; padding: 10px;">
-                    <div contenteditable="true" style="margin-bottom: 10px; min-height: 25px;">اكتب السؤال المقالي هنا...</div>
-                    <div style="border-top: 1px solid #ccc; min-height: 100px; margin-top: 10px; padding-top: 10px;">
-                        <div style="color: #999; font-size: 14px; text-align: center;">مساحة الإجابة</div>
-                        <div style="margin-top: 20px; border-top: 1px dotted #ccc;"></div>
-                        <div style="margin-top: 20px; border-top: 1px dotted #ccc;"></div>
-                        <div style="margin-top: 20px; border-top: 1px dotted #ccc;"></div>
-                    </div>
-                </div>
-                <div style="width: 60px; text-align: center;">
-                    <div style="margin-bottom: 5px; font-size: 10px;">الدرجة:</div>
-                    <input type="number" id="${id}-grade" min="0" max="100" value="5" style="width: 50px; padding: 2px; text-align: center; border: 1px solid #ccc; border-radius: 3px;">
-                    <br><br>
-                    <button class="btn-del" onclick="if(confirm('حذف هذا السؤال؟')) { document.getElementById('${id}').remove(); reorderAllQuestions(); }" title="حذف السؤال">✖</button>
-                </div>
-            </div>
-        </div>`;
-        container.insertAdjacentHTML('beforeend', html);
-        
-        setTimeout(() => {
-            if (container.scrollHeight > container.clientHeight + 10) {
-                const lastQ = document.getElementById(id);
-                addNewPage();
-                document.getElementById('qc' + currentPage).appendChild(lastQ);
-                updatePaginationInfo();
-            }
-        }, 100);
-    }
-
-    function addTrueFalseQuestion() {
-        const container = document.getElementById('qc' + currentPage);
-        
-        qCount++; 
-        const id = 'q' + qCount;
-        const html = `<table class="questions-table" id="${id}" data-type="صح/خطأ" style="margin-bottom: 10px; width: 100%;">
-            <tr>
-                <td class="q-num" style="width: 35px; text-align: center; border: 1px solid #000;">${toArabic(qCount)}</td>
-                <td style="width: auto; text-align: right; padding: 10px; border: 1px solid #000;">
-                    <div contenteditable="true">اكتب السؤال هنا...</div>
-                </td>
-                <td style="width: 80px; border: 1px solid #000; text-align: center;"></td>
-                <td style="width:80px; border:none; text-align:center;">
-                    <div style="margin-bottom: 5px; font-size: 10px;">الدرجة:</div>
-                    <input type="number" id="${id}-grade" min="0" max="100" value="1" style="width: 50px; padding: 2px; text-align: center; border: 1px solid #ccc; border-radius: 3px;">
-                    <br>
-                    <div style="margin: 5px 0; font-size: 10px;">الإجابة:</div>
-                    <select id="${id}-answer" style="width: 50px; padding: 2px; border: 1px solid #ccc; border-radius: 3px;">
-                        <option value="1">صح</option>
-                        <option value="0">خطأ</option>
-                    </select>
-                    <br><br>
-                    <button class="btn-del" onclick="if(confirm('حذف هذا السؤال؟')) { document.getElementById('${id}').remove(); reorderAllQuestions(); }" title="حذف السؤال">✖</button>
-                </td>
-            </tr>
-        </table>`;
-        container.insertAdjacentHTML('beforeend', html);
-        
-        setTimeout(() => {
-            if (container.scrollHeight > container.clientHeight + 10) {
-                const lastQ = document.getElementById(id);
-                addNewPage();
-                document.getElementById('qc' + currentPage).appendChild(lastQ);
-                updatePaginationInfo();
-            }
-        }, 100);
-    }
-
-    function addNewPage() {
-        pTotal++;
-        currentPage = pTotal;
-        const newPaperHtml = `<div class="paper" id="page${pTotal}" ondblclick="addFreeTextBox(event, 'qc${pTotal}')">
-            <div id="qc${pTotal}" class="q-container"></div>
-            <div class="footer-line">
-                <div class="footer-text">انتهت الأسئلة - مع تمنياتنا لكم بالتوفيق</div>
-                <div class="page-num">صفحة ${toArabic(pTotal)} من ${toArabic(pTotal)}</div>
-            </div>
-        </div>`;
-        document.getElementById('examPages').insertAdjacentHTML('beforeend', newPaperHtml);
-        updatePaginationInfo();
-        syncFields();
-    }
-
-    function updatePaginationInfo() {
-        const papers = document.querySelectorAll('.paper');
-        papers.forEach((p, i) => {
-            const pageNum = i + 1;
-            p.querySelector('.page-num').innerText = `صفحة ${toArabic(pageNum)} من ${toArabic(papers.length)}`;
-            const footerText = p.querySelector('.footer-text');
-            if (pageNum === papers.length) footerText.innerText = "انتهت الأسئلة - مع تمنياتنا لكم بالتوفيق";
-            else footerText.innerText = "تابع الأسئلة في الصفحة التالية...";
-        });
-    }
-
-    function removeQuestion(id) { 
-        if(confirm('هل تريد حذف هذا السؤال؟')) { 
-            document.getElementById(id).remove(); 
-            reorderQuestions(); 
-            updatePaginationInfo(); 
-        } 
-    }
-    
-    function reorderQuestions() { 
-        const qs = document.querySelectorAll('.questions-table'); 
-        qs.forEach((q, i) => { 
-            q.querySelector('.q-num').innerText = toArabic(i + 1); 
-        }); 
-        qCount = qs.length; 
-    }
-    
-    function toArabic(num) { 
-        const id = ['٠','١','٢','٣','٤','٥','٦','٧','٨','٩']; 
-        return num.toString().replace(/[0-9]/g, w => id[+w]); 
-    }
-    
-    function openMathModal() { 
-        document.getElementById('mathModal').style.display = 'block'; 
-    }
-    
-    function closeMathModal() { 
-        document.getElementById('mathModal').style.display = 'none'; 
-    }
-    
-    function insertMath(latex) { 
-        document.getElementById('math-input').value += latex; 
-        updateMathPreview(); 
-    }
-    
-    function updateMathPreview() {
-        const preview = document.getElementById('math-preview');
-        preview.innerText = `$$${document.getElementById('math-input').value}$$`;
-        MathJax.typesetPromise([preview]);
-    }
-    
-    function insertMathToQuestion() {
-        if (lastFocusedQuestionId) {
-            const qText = document.getElementById(`${lastFocusedQuestionId}-text`);
-            qText.innerHTML += ` \\(${document.getElementById('math-input').value}\\) `;
-            MathJax.typesetPromise([qText]); 
-            closeMathModal();
-        }
-    }
-
-    // وظائف الصور - جديدة ومبسطة
-    let isDragging = false;
-    let isResizing = false;
-    let currentImg = null;
-    let startX, startY, startWidth, startHeight;
-    let offsetX, offsetY;
-
-    function handleImageUpload(event, qId) {
-        const file = event.target.files[0];
-        if (!file) return;
-        
-        const reader = new FileReader();
-        reader.onload = function(e) {
-            const qText = document.getElementById(qId + '-text');
-            const imgId = 'img_' + Date.now();
-            
-            const imgWrapper = document.createElement('div');
-            imgWrapper.className = 'img-wrapper';
-            imgWrapper.id = 'wrapper_' + imgId;
-            imgWrapper.style.cssText = 'position: relative; display: inline-block; margin: 10px;';
-            
-            imgWrapper.innerHTML = `
-                <div class="img-delete-btn" onclick="deleteImage('wrapper_${imgId}')">✖</div>
-                <img id="${imgId}" src="${e.target.result}" style="width: 250px; height: auto; border-radius: 5px;">
-                <div class="resize-handle" onmousedown="startResize(event, '${imgId}')"></div>
-            `;
-            
-            qText.appendChild(imgWrapper);
-            
-            // إضافة السحب والإفلات
-            imgWrapper.addEventListener('mousedown', function(e) {
-                if (e.target.classList.contains('resize-handle') || e.target.classList.contains('img-delete-btn')) return;
-                startDrag(e, imgWrapper);
-            });
-        };
-        reader.readAsDataURL(file);
-        event.target.value = '';
-    }
-
-    function startDrag(e, element) {
-        isDragging = true;
-        currentImg = element;
-        
-        const rect = element.getBoundingClientRect();
-        const parent = element.parentElement.getBoundingClientRect();
-        
-        offsetX = e.clientX - rect.left;
-        offsetY = e.clientY - rect.top;
-        
-        element.classList.add('dragging');
-        element.style.position = 'absolute';
-        element.style.zIndex = '1000';
-        
-        e.preventDefault();
-    }
-
-    function startResize(e, imgId) {
-        e.stopPropagation();
-        isResizing = true;
-        currentImg = document.getElementById(imgId);
-        startX = e.clientX;
-        startY = e.clientY;
-        startWidth = currentImg.offsetWidth;
-        startHeight = currentImg.offsetHeight;
-        e.preventDefault();
-    }
-
-    document.addEventListener('mousemove', function(e) {
-        if (isDragging && currentImg) {
-            const parent = currentImg.parentElement;
-            const parentRect = parent.getBoundingClientRect();
-            
-            let newLeft = e.clientX - parentRect.left - offsetX;
-            let newTop = e.clientY - parentRect.top - offsetY;
-            
-            currentImg.style.left = newLeft + 'px';
-            currentImg.style.top = newTop + 'px';
-        }
-        
-        if (isResizing && currentImg) {
-            const diffX = e.clientX - startX;
-            const newWidth = startWidth + diffX;
-            
-            if (newWidth > 50) {
-                currentImg.style.width = newWidth + 'px';
-            }
-        }
-    });
-
-    document.addEventListener('mouseup', function() {
-        if (isDragging && currentImg) {
-            currentImg.classList.remove('dragging');
-            isDragging = false;
-            currentImg = null;
-        }
-        if (isResizing) {
-            isResizing = false;
-            currentImg = null;
-        }
-    });
-
-    function deleteImage(wrapperId) {
-        if (confirm('هل تريد حذف هذه الصورة؟')) {
-            const wrapper = document.getElementById(wrapperId);
-            if (wrapper) {
-                wrapper.remove();
-            }
-        }
-    }
-
-    // وظيفة الكتابة الحرة في أي مكان
-    function addFreeTextBox(event, containerId) {
-        if (event.target.classList.contains('q-container') || event.target.id === containerId) {
-            const container = document.getElementById(containerId);
-            const rect = container.getBoundingClientRect();
-            const x = event.clientX - rect.left;
-            const y = event.clientY - rect.top;
-            
-            const textBox = document.createElement('div');
-            textBox.className = 'free-text-box';
-            textBox.contentEditable = 'true';
-            textBox.style.left = x + 'px';
-            textBox.style.top = y + 'px';
-            textBox.innerHTML = 'اكتب هنا...';
-            
-            // السحب والإفلات
-            textBox.addEventListener('mousedown', function(e) {
-                if (e.target === textBox) {
-                    let shiftX = e.clientX - textBox.getBoundingClientRect().left;
-                    let shiftY = e.clientY - textBox.getBoundingClientRect().top;
-                    
-                    function moveAt(pageX, pageY) {
-                        const containerRect = container.getBoundingClientRect();
-                        textBox.style.left = (pageX - containerRect.left - shiftX) + 'px';
-                        textBox.style.top = (pageY - containerRect.top - shiftY) + 'px';
-                    }
-                    
-                    function onMouseMove(e) {
-                        moveAt(e.pageX, e.pageY);
-                    }
-                    
-                    document.addEventListener('mousemove', onMouseMove);
-                    
-                    textBox.onmouseup = function() {
-                        document.removeEventListener('mousemove', onMouseMove);
-                        textBox.onmouseup = null;
-                    };
-                }
-            });
-            
-            textBox.ondragstart = function() {
-                return false;
-            };
-            
-            // حذف بالنقر على Delete
-            textBox.addEventListener('keydown', function(e) {
-                if (e.key === 'Delete' && e.ctrlKey) {
-                    if (confirm('حذف هذا المربع؟')) {
-                        textBox.remove();
-                    }
-                }
-            });
-            
-            container.appendChild(textBox);
-            textBox.focus();
-            textBox.select();
-        }
-    }
-
-    // تصدير إلى إكسل
-    function exportToExcel() {
-        const questions = [];
-        
-        // جمع جميع الأسئلة
-        const allQuestions = document.querySelectorAll('.questions-table, [id^="q"][data-type]');
-        
-        allQuestions.forEach((q, index) => {
-            const type = q.getAttribute('data-type') || 'متعدد الاختيارات';
-            const questionText = q.querySelector('[contenteditable="true"]')?.innerText.trim() || '';
-            const gradeInput = q.querySelector('input[type="number"]');
-            const grade = gradeInput ? gradeInput.value : '1';
-            const answerSelect = q.querySelector('select');
-            const correctAnswer = answerSelect ? answerSelect.value : '';
-            
-            questions.push({
-                type: type,
-                text: questionText,
-                grade: grade,
-                answer: correctAnswer
-            });
-        });
-        
-        if (questions.length === 0) {
-            alert('لا توجد أسئلة للتصدير!');
-            return;
-        }
-        
-        // إنشاء محتوى CSV
-        let csv = '\uFEFF'; // BOM for UTF-8
-        csv += 'نوع السؤال,نص السؤال,درجة السؤال,الإجابة الصحيحة\n';
-        
-        questions.forEach(q => {
-            csv += `"${q.type}","${q.text}","${q.grade}","${q.answer}"\n`;
-        });
-        
-        // تحميل الملف
-        const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
-        const link = document.createElement('a');
-        const url = URL.createObjectURL(blob);
-        link.setAttribute('href', url);
-        link.setAttribute('download', 'exam_questions.csv');
-        link.style.visibility = 'hidden';
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-        
-        alert(`تم تصدير ${toArabic(questions.length)} سؤال بنجاح!`);
-    }
-</script>
-</body>
-</html>
+        const container =
