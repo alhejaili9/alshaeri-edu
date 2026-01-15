@@ -138,11 +138,75 @@
         .img-control-btn:hover {
             background: #2980b9;
         }
+        
+        .img-wrapper {
+            position: relative;
+            display: inline-block;
+            margin: 10px;
+            padding: 5px;
+            border: 3px solid #3498db;
+            border-radius: 8px;
+            background: #f8f9fa;
+            cursor: move;
+            user-select: none;
+        }
+        
+        .img-wrapper.dragging {
+            opacity: 0.7;
+            border-color: #e74c3c;
+        }
+        
+        .img-wrapper img {
+            display: block;
+            border-radius: 5px;
+            pointer-events: none;
+        }
+        
+        .resize-handle {
+            position: absolute;
+            bottom: 0;
+            right: 0;
+            width: 20px;
+            height: 20px;
+            background: #3498db;
+            border-radius: 50%;
+            cursor: nwse-resize;
+            z-index: 10;
+            border: 2px solid white;
+        }
+        
+        .img-delete-btn {
+            position: absolute;
+            top: -10px;
+            right: -10px;
+            width: 25px;
+            height: 25px;
+            background: #e74c3c;
+            color: white;
+            border: 2px solid white;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            z-index: 10;
+        }
+        
+        .img-delete-btn:hover {
+            background: #c0392b;
+        }
 
         @media print {
             @page { margin: 0; size: A4 portrait; }
             body { margin: 0; padding: 0; background: none !important; }
-            .sidebar, .btn-del, .toggle-btn, .user-credit, .img-control-btn, .img-controls { display: none !important; }
+            .sidebar, .btn-del, .toggle-btn, .user-credit, .img-control-btn, .img-controls, .resize-handle, .img-delete-btn { display: none !important; }
+            .img-wrapper {
+                border: none !important;
+                background: transparent !important;
+                padding: 0 !important;
+            }
             .paper { 
                 margin: 0 !important; 
                 border: 4px double #000 !important; 
@@ -183,7 +247,6 @@
     <button class="action-btn btn-add" onclick="addNewQuestion()">➕ إضافة سؤال جديد</button>
     <button class="action-btn btn-page" onclick="addNewPage()">📄 إضافة صفحة جديدة</button>
     <button class="action-btn btn-math" onclick="openMathModal()">➕ رموز رياضية</button>
-    <button class="action-btn btn-add" onclick="addImageToQuestion()" style="background: #e67e22;">🖼️ إضافة صورة للسؤال</button>
     <button class="action-btn btn-print" onclick="window.print()">🖨️ طباعة الاختبار</button>
     
     <div class="user-credit">إعداد أ/ عبدالرحمن سعد الحجيلي</div>
@@ -340,10 +403,12 @@
             <tr><td rowspan="2" class="q-num">${toArabic(qCount)}</td>
             <td colspan="8" class="q-head">
                 <div id="${id}-text" contenteditable="true">اكتب السؤال هنا...</div>
-                <button class="img-control-btn" onclick="triggerImageUpload('${id}')" style="margin-top:5px; background:#e67e22;">📷 إضافة صورة</button>
                 <input type="file" id="${id}-imgInput" accept="image/*" style="display:none;" onchange="handleImageUpload(event, '${id}')">
             </td>
-            <td rowspan="2" style="width:30px; border:none; text-align:center;"><button class="btn-del" onclick="removeQuestion('${id}')">✖</button></td></tr>
+            <td rowspan="2" style="width:30px; border:none; text-align:center;">
+                <button class="btn-del" onclick="document.getElementById('${id}-imgInput').click()" style="background:#e67e22; margin-bottom:5px;" title="إضافة صورة">📷</button><br>
+                <button class="btn-del" onclick="if(confirm('حذف هذا السؤال؟')) { document.getElementById('${id}').remove(); reorderAllQuestions(); }" title="حذف السؤال">✖</button>
+            </td></tr>
             <tr><td class="opt-char">أ</td><td class="opt-val" contenteditable="true"></td><td class="opt-char">ب</td><td class="opt-val" contenteditable="true"></td><td class="opt-char">ج</td><td class="opt-val" contenteditable="true"></td><td class="opt-char">د</td><td class="opt-val" contenteditable="true"></td></tr></table>`;
         container.insertAdjacentHTML('beforeend', html);
         
@@ -434,9 +499,11 @@
     }
 
     // وظائف الصور - جديدة ومبسطة
-    function triggerImageUpload(qId) {
-        document.getElementById(qId + '-imgInput').click();
-    }
+    let isDragging = false;
+    let isResizing = false;
+    let currentImg = null;
+    let startX, startY, startWidth, startHeight;
+    let offsetX, offsetY;
 
     function handleImageUpload(event, qId) {
         const file = event.target.files[0];
@@ -447,33 +514,101 @@
             const qText = document.getElementById(qId + '-text');
             const imgId = 'img_' + Date.now();
             
-            const imgContainer = document.createElement('div');
-            imgContainer.style.cssText = 'margin: 10px 0; padding: 10px; border: 2px dashed #3498db; border-radius: 5px; background: #f8f9fa;';
-            imgContainer.innerHTML = `
-                <img id="${imgId}" src="${e.target.result}" style="width: 200px; max-width: 100%; display: block; margin: 0 auto 10px; border-radius: 5px;">
-                <div style="display: flex; gap: 5px; justify-content: center; flex-wrap: wrap;">
-                    <button class="img-control-btn" onclick="document.getElementById('${imgId}').style.width='80px'">صغير جداً</button>
-                    <button class="img-control-btn" onclick="document.getElementById('${imgId}').style.width='150px'">صغير</button>
-                    <button class="img-control-btn" onclick="document.getElementById('${imgId}').style.width='250px'">متوسط</button>
-                    <button class="img-control-btn" onclick="document.getElementById('${imgId}').style.width='350px'">كبير</button>
-                    <button class="img-control-btn" onclick="document.getElementById('${imgId}').style.width='450px'">كبير جداً</button>
-                    <br>
-                    <button class="img-control-btn" onclick="this.parentElement.parentElement.style.textAlign='right'">➡️ يمين</button>
-                    <button class="img-control-btn" onclick="this.parentElement.parentElement.style.textAlign='center'">⬇️ وسط</button>
-                    <button class="img-control-btn" onclick="this.parentElement.parentElement.style.textAlign='left'">⬅️ يسار</button>
-                    <button class="img-control-btn" style="background:#e74c3c;" onclick="if(confirm('حذف الصورة؟')) this.parentElement.parentElement.remove()">🗑️ حذف</button>
-                </div>
+            const imgWrapper = document.createElement('div');
+            imgWrapper.className = 'img-wrapper';
+            imgWrapper.id = 'wrapper_' + imgId;
+            imgWrapper.style.cssText = 'position: relative; display: inline-block; margin: 10px;';
+            
+            imgWrapper.innerHTML = `
+                <div class="img-delete-btn" onclick="deleteImage('wrapper_${imgId}')">✖</div>
+                <img id="${imgId}" src="${e.target.result}" style="width: 250px; height: auto; border-radius: 5px;">
+                <div class="resize-handle" onmousedown="startResize(event, '${imgId}')"></div>
             `;
-            qText.appendChild(imgContainer);
+            
+            qText.appendChild(imgWrapper);
+            
+            // إضافة السحب والإفلات
+            imgWrapper.addEventListener('mousedown', function(e) {
+                if (e.target.classList.contains('resize-handle') || e.target.classList.contains('img-delete-btn')) return;
+                startDrag(e, imgWrapper);
+            });
         };
         reader.readAsDataURL(file);
         event.target.value = '';
     }
 
-    // إزالة الوظيفة القديمة
-    function addImageToQuestion() {
-        alert('⚠️ استخدم زر "📷 إضافة صورة" الموجود داخل كل سؤال');
+    function startDrag(e, element) {
+        isDragging = true;
+        currentImg = element;
+        
+        const rect = element.getBoundingClientRect();
+        const parent = element.parentElement.getBoundingClientRect();
+        
+        offsetX = e.clientX - rect.left;
+        offsetY = e.clientY - rect.top;
+        
+        element.classList.add('dragging');
+        element.style.position = 'absolute';
+        element.style.zIndex = '1000';
+        
+        e.preventDefault();
     }
+
+    function startResize(e, imgId) {
+        e.stopPropagation();
+        isResizing = true;
+        currentImg = document.getElementById(imgId);
+        startX = e.clientX;
+        startY = e.clientY;
+        startWidth = currentImg.offsetWidth;
+        startHeight = currentImg.offsetHeight;
+        e.preventDefault();
+    }
+
+    document.addEventListener('mousemove', function(e) {
+        if (isDragging && currentImg) {
+            const parent = currentImg.parentElement;
+            const parentRect = parent.getBoundingClientRect();
+            
+            let newLeft = e.clientX - parentRect.left - offsetX;
+            let newTop = e.clientY - parentRect.top - offsetY;
+            
+            currentImg.style.left = newLeft + 'px';
+            currentImg.style.top = newTop + 'px';
+        }
+        
+        if (isResizing && currentImg) {
+            const diffX = e.clientX - startX;
+            const newWidth = startWidth + diffX;
+            
+            if (newWidth > 50) {
+                currentImg.style.width = newWidth + 'px';
+            }
+        }
+    });
+
+    document.addEventListener('mouseup', function() {
+        if (isDragging && currentImg) {
+            currentImg.classList.remove('dragging');
+            isDragging = false;
+            currentImg = null;
+        }
+        if (isResizing) {
+            isResizing = false;
+            currentImg = null;
+        }
+    });
+
+    function deleteImage(wrapperId) {
+        if (confirm('هل تريد حذف هذه الصورة؟')) {
+            const wrapper = document.getElementById(wrapperId);
+            if (wrapper) {
+                wrapper.remove();
+            }
+        }
+    }
+
+    // حذف الوظيفة غير المستخدمة
 </script>
 </body>
 </html>
