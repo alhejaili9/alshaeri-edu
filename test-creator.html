@@ -56,6 +56,22 @@
             flex: 1;
             overflow: hidden;
             max-height: calc(297mm - 80mm);
+            position: relative;
+        }
+        
+        .free-text-box {
+            position: absolute;
+            min-width: 100px;
+            min-height: 30px;
+            padding: 5px;
+            border: 1px dashed #3498db;
+            background: rgba(255, 255, 255, 0.9);
+            cursor: move;
+            z-index: 100;
+        }
+        
+        .free-text-box:hover {
+            border: 2px solid #3498db;
         }
 
         .footer-line { 
@@ -207,6 +223,10 @@
                 background: transparent !important;
                 padding: 0 !important;
             }
+            .free-text-box {
+                border: none !important;
+                background: transparent !important;
+            }
             .paper { 
                 margin: 0 !important; 
                 border: 4px double #000 !important; 
@@ -244,7 +264,9 @@
     <label>الزمن (دقائق):</label>
     <select id="inputDuration" onchange="syncFields()"></select>
     
-    <button class="action-btn btn-add" onclick="addNewQuestion()">➕ إضافة سؤال جديد</button>
+    <button class="action-btn btn-add" onclick="addNewQuestion()">➕ إضافة سؤال اختيارات</button>
+    <button class="action-btn btn-add" onclick="addEssayQuestion()" style="background: #16a085;">📝 إضافة سؤال مقالي</button>
+    <button class="action-btn btn-add" onclick="addTrueFalseQuestion()" style="background: #8e44ad;">✓✗ إضافة سؤال صح/خطأ</button>
     <button class="action-btn btn-page" onclick="addNewPage()">📄 إضافة صفحة جديدة</button>
     <button class="action-btn btn-math" onclick="openMathModal()">➕ رموز رياضية</button>
     <button class="action-btn btn-print" onclick="window.print()">🖨️ طباعة الاختبار</button>
@@ -310,7 +332,7 @@
 </div>
 
 <div id="examPages">
-    <div class="paper" id="page1">
+    <div class="paper" id="page1" ondblclick="addFreeTextBox(event, 'qc1')">
         <table class="header-table">
             <tr>
                 <td><div>المملكة العربية السعودية</div><div>وزارة التعليم</div><div>إدارة التعليم بالمدينة المنورة</div><div><strong>مدارس العقيق الأهلية</strong></div></td>
@@ -423,10 +445,68 @@
         }, 100);
     }
 
+    function addEssayQuestion() {
+        const container = document.getElementById('qc' + currentPage);
+        
+        qCount++; 
+        const id = 'q' + qCount;
+        const html = `<table class="questions-table" id="${id}">
+            <tr><td rowspan="2" class="q-num">${toArabic(qCount)}</td>
+            <td colspan="8" class="q-head">
+                <div id="${id}-text" contenteditable="true">اكتب السؤال المقالي هنا...</div>
+                <div style="border: 1px solid #ccc; min-height: 80px; margin-top: 10px; padding: 5px; background: #f9f9f9;">
+                    <span style="color: #999; font-size: 14px;">مساحة الإجابة</span>
+                </div>
+                <input type="file" id="${id}-imgInput" accept="image/*" style="display:none;" onchange="handleImageUpload(event, '${id}')">
+            </td>
+            <td rowspan="2" style="width:30px; border:none; text-align:center;">
+                <button class="btn-del" onclick="document.getElementById('${id}-imgInput').click()" style="background:#e67e22; margin-bottom:5px;" title="إضافة صورة">📷</button><br>
+                <button class="btn-del" onclick="if(confirm('حذف هذا السؤال؟')) { document.getElementById('${id}').remove(); reorderAllQuestions(); }" title="حذف السؤال">✖</button>
+            </td></tr></table>`;
+        container.insertAdjacentHTML('beforeend', html);
+        
+        setTimeout(() => {
+            if (container.scrollHeight > container.clientHeight + 10) {
+                const lastQ = document.getElementById(id);
+                addNewPage();
+                document.getElementById('qc' + currentPage).appendChild(lastQ);
+                updatePaginationInfo();
+            }
+        }, 100);
+    }
+
+    function addTrueFalseQuestion() {
+        const container = document.getElementById('qc' + currentPage);
+        
+        qCount++; 
+        const id = 'q' + qCount;
+        const html = `<table class="questions-table" id="${id}">
+            <tr><td rowspan="2" class="q-num">${toArabic(qCount)}</td>
+            <td colspan="8" class="q-head">
+                <div id="${id}-text" contenteditable="true">اكتب السؤال هنا...</div>
+                <input type="file" id="${id}-imgInput" accept="image/*" style="display:none;" onchange="handleImageUpload(event, '${id}')">
+            </td>
+            <td rowspan="2" style="width:30px; border:none; text-align:center;">
+                <button class="btn-del" onclick="document.getElementById('${id}-imgInput').click()" style="background:#e67e22; margin-bottom:5px;" title="إضافة صورة">📷</button><br>
+                <button class="btn-del" onclick="if(confirm('حذف هذا السؤال؟')) { document.getElementById('${id}').remove(); reorderAllQuestions(); }" title="حذف السؤال">✖</button>
+            </td></tr>
+            <tr><td colspan="2" class="opt-char" style="text-align:center;">صح</td><td colspan="2" style="border: 1px solid #000; text-align:center;"></td><td colspan="2" class="opt-char" style="text-align:center;">خطأ</td><td colspan="2" style="border: 1px solid #000; text-align:center;"></td></tr></table>`;
+        container.insertAdjacentHTML('beforeend', html);
+        
+        setTimeout(() => {
+            if (container.scrollHeight > container.clientHeight + 10) {
+                const lastQ = document.getElementById(id);
+                addNewPage();
+                document.getElementById('qc' + currentPage).appendChild(lastQ);
+                updatePaginationInfo();
+            }
+        }, 100);
+    }
+
     function addNewPage() {
         pTotal++;
         currentPage = pTotal;
-        const newPaperHtml = `<div class="paper" id="page${pTotal}">
+        const newPaperHtml = `<div class="paper" id="page${pTotal}" ondblclick="addFreeTextBox(event, 'qc${pTotal}')">
             <div id="qc${pTotal}" class="q-container"></div>
             <div class="footer-line">
                 <div class="footer-text">انتهت الأسئلة - مع تمنياتنا لكم بالتوفيق</div>
@@ -608,7 +688,64 @@
         }
     }
 
-    // حذف الوظيفة غير المستخدمة
+    // وظيفة الكتابة الحرة في أي مكان
+    function addFreeTextBox(event, containerId) {
+        if (event.target.classList.contains('q-container') || event.target.id === containerId) {
+            const container = document.getElementById(containerId);
+            const rect = container.getBoundingClientRect();
+            const x = event.clientX - rect.left;
+            const y = event.clientY - rect.top;
+            
+            const textBox = document.createElement('div');
+            textBox.className = 'free-text-box';
+            textBox.contentEditable = 'true';
+            textBox.style.left = x + 'px';
+            textBox.style.top = y + 'px';
+            textBox.innerHTML = 'اكتب هنا...';
+            
+            // السحب والإفلات
+            textBox.addEventListener('mousedown', function(e) {
+                if (e.target === textBox) {
+                    let shiftX = e.clientX - textBox.getBoundingClientRect().left;
+                    let shiftY = e.clientY - textBox.getBoundingClientRect().top;
+                    
+                    function moveAt(pageX, pageY) {
+                        const containerRect = container.getBoundingClientRect();
+                        textBox.style.left = (pageX - containerRect.left - shiftX) + 'px';
+                        textBox.style.top = (pageY - containerRect.top - shiftY) + 'px';
+                    }
+                    
+                    function onMouseMove(e) {
+                        moveAt(e.pageX, e.pageY);
+                    }
+                    
+                    document.addEventListener('mousemove', onMouseMove);
+                    
+                    textBox.onmouseup = function() {
+                        document.removeEventListener('mousemove', onMouseMove);
+                        textBox.onmouseup = null;
+                    };
+                }
+            });
+            
+            textBox.ondragstart = function() {
+                return false;
+            };
+            
+            // حذف بالنقر على Delete
+            textBox.addEventListener('keydown', function(e) {
+                if (e.key === 'Delete' && e.ctrlKey) {
+                    if (confirm('حذف هذا المربع؟')) {
+                        textBox.remove();
+                    }
+                }
+            });
+            
+            container.appendChild(textBox);
+            textBox.focus();
+            textBox.select();
+        }
+    }
 </script>
 </body>
 </html>
