@@ -297,6 +297,15 @@
         }
     });
 
+    // تتبع السؤال النشط
+    document.addEventListener('click', function(e) {
+        const questionDiv = e.target.closest('[id$="-text"]');
+        if (questionDiv) {
+            const qId = questionDiv.id.replace('-text', '');
+            lastFocusedQuestionId = qId;
+        }
+    });
+
     function toggleSidebar() { document.getElementById('sidebar').classList.toggle('hidden'); }
     function changeFontSize(val) { document.documentElement.style.setProperty('--base-font-size', val + 'px'); }
 
@@ -330,7 +339,7 @@
         const id = 'q' + qCount;
         const html = `<table class="questions-table" id="${id}">
             <tr><td rowspan="2" class="q-num">${toArabic(qCount)}</td>
-            <td colspan="8" class="q-head"><div id="${id}-text" contenteditable="true" onfocus="setLastFocusedQuestion('${id}')">اكتب السؤال هنا...</div></td>
+            <td colspan="8" class="q-head"><div id="${id}-text" contenteditable="true">اكتب السؤال هنا...</div></td>
             <td rowspan="2" style="width:30px; border:none; text-align:center;"><button class="btn-del" onclick="removeQuestion('${id}')">✖</button></td></tr>
             <tr><td class="opt-char">أ</td><td class="opt-val" contenteditable="true"></td><td class="opt-char">ب</td><td class="opt-val" contenteditable="true"></td><td class="opt-char">ج</td><td class="opt-val" contenteditable="true"></td><td class="opt-char">د</td><td class="opt-val" contenteditable="true"></td></tr></table>`;
         container.insertAdjacentHTML('beforeend', html);
@@ -338,7 +347,6 @@
         // فحص إذا امتلأت الصفحة
         setTimeout(() => {
             if (container.scrollHeight > container.clientHeight + 10) {
-                // الصفحة امتلأت، انقل آخر سؤال لصفحة جديدة
                 const lastQ = document.getElementById(id);
                 addNewPage();
                 document.getElementById('qc' + currentPage).appendChild(lastQ);
@@ -422,90 +430,53 @@
         }
     }
 
-    // وظيفة تحديد السؤال الحالي
-    function setLastFocusedQuestion(qId) {
-        lastFocusedQuestionId = qId;
-        console.log('تم تحديد السؤال:', qId);
-    }
-
-    // وظائف الصور
+    // وظائف الصور - مبسطة
     function addImageToQuestion() {
-        console.log('زر الصورة تم الضغط عليه');
-        console.log('السؤال الحالي:', lastFocusedQuestionId);
-        
         if (!lastFocusedQuestionId) {
-            alert('الرجاء النقر على السؤال المراد إضافة صورة له أولاً');
+            alert('⚠️ الرجاء الضغط على السؤال أولاً ثم اضغط زر الصورة');
             return;
         }
-        
-        const fileInput = document.getElementById('hiddenImgInput');
-        console.log('محاولة فتح محدد الملفات');
-        fileInput.click();
+        document.getElementById('hiddenImgInput').click();
     }
 
     function processImage(event) {
-        console.log('تم اختيار ملف');
         const file = event.target.files[0];
-        if (!file) {
-            console.log('لا يوجد ملف');
+        if (!file) return;
+        
+        if (!lastFocusedQuestionId) {
+            alert('⚠️ لم يتم تحديد سؤال');
             return;
         }
         
-        console.log('نوع الملف:', file.type);
-        console.log('حجم الملف:', file.size);
-        
         const reader = new FileReader();
         reader.onload = function(e) {
-            console.log('تم قراءة الملف بنجاح');
-            if (lastFocusedQuestionId) {
-                const qText = document.getElementById(`${lastFocusedQuestionId}-text`);
-                if (!qText) {
-                    console.log('لم يتم العثور على السؤال');
-                    return;
-                }
-                
-                const imgId = 'img_' + Date.now();
-                const imgHtml = `
-                    <div style="margin: 10px 0; text-align: center;">
-                        <img id="${imgId}" src="${e.target.result}" class="question-img" style="width: 200px;">
-                        <div class="img-controls">
-                            <button class="img-control-btn" onclick="resizeImage('${imgId}', 50)">صغير جداً</button>
-                            <button class="img-control-btn" onclick="resizeImage('${imgId}', 100)">صغير</button>
-                            <button class="img-control-btn" onclick="resizeImage('${imgId}', 200)">متوسط</button>
-                            <button class="img-control-btn" onclick="resizeImage('${imgId}', 300)">كبير</button>
-                            <button class="img-control-btn" onclick="resizeImage('${imgId}', 400)">كبير جداً</button>
-                            <button class="img-control-btn" onclick="alignImage('${imgId}', 'right')">يمين</button>
-                            <button class="img-control-btn" onclick="alignImage('${imgId}', 'center')">وسط</button>
-                            <button class="img-control-btn" onclick="alignImage('${imgId}', 'left')">يسار</button>
-                            <button class="img-control-btn" style="background:#e74c3c;" onclick="removeImage('${imgId}')">🗑️ حذف</button>
-                        </div>
-                    </div>
-                `;
-                qText.innerHTML += imgHtml;
-                console.log('تم إضافة الصورة للسؤال');
+            const qText = document.getElementById(`${lastFocusedQuestionId}-text`);
+            if (!qText) {
+                alert('⚠️ خطأ: لم يتم العثور على السؤال');
+                return;
             }
+            
+            const imgId = 'img_' + Date.now();
+            const imgContainer = document.createElement('div');
+            imgContainer.style.cssText = 'margin: 10px 0; text-align: center; border: 2px dashed #ccc; padding: 10px;';
+            imgContainer.innerHTML = `
+                <img id="${imgId}" src="${e.target.result}" style="width: 200px; max-width: 100%; display: block; margin: 0 auto 10px;">
+                <div style="display: flex; gap: 5px; justify-content: center; flex-wrap: wrap;">
+                    <button class="img-control-btn" onclick="document.getElementById('${imgId}').style.width='50px'">٥٠ بكسل</button>
+                    <button class="img-control-btn" onclick="document.getElementById('${imgId}').style.width='100px'">١٠٠ بكسل</button>
+                    <button class="img-control-btn" onclick="document.getElementById('${imgId}').style.width='200px'">٢٠٠ بكسل</button>
+                    <button class="img-control-btn" onclick="document.getElementById('${imgId}').style.width='300px'">٣٠٠ بكسل</button>
+                    <button class="img-control-btn" onclick="document.getElementById('${imgId}').style.width='400px'">٤٠٠ بكسل</button>
+                    <button class="img-control-btn" onclick="this.parentElement.parentElement.style.textAlign='right'">➡️ يمين</button>
+                    <button class="img-control-btn" onclick="this.parentElement.parentElement.style.textAlign='center'">⬇️ وسط</button>
+                    <button class="img-control-btn" onclick="this.parentElement.parentElement.style.textAlign='left'">⬅️ يسار</button>
+                    <button class="img-control-btn" style="background:#e74c3c;" onclick="if(confirm('حذف الصورة؟')) this.parentElement.parentElement.remove()">🗑️ حذف</button>
+                </div>
+            `;
+            qText.appendChild(imgContainer);
         };
         reader.readAsDataURL(file);
         event.target.value = '';
-    }
-
-    function resizeImage(imgId, width) {
-        const img = document.getElementById(imgId);
-        if (img) img.style.width = width + 'px';
-    }
-
-    function alignImage(imgId, alignment) {
-        const container = document.getElementById(imgId).parentElement;
-        if (alignment === 'right') container.style.textAlign = 'right';
-        else if (alignment === 'center') container.style.textAlign = 'center';
-        else if (alignment === 'left') container.style.textAlign = 'left';
-    }
-
-    function removeImage(imgId) {
-        const img = document.getElementById(imgId);
-        if (img && confirm('هل تريد حذف هذه الصورة؟')) {
-            img.parentElement.remove();
-        }
     }
 </script>
 </body>
